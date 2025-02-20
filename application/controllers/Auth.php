@@ -114,8 +114,6 @@ class Auth extends CI_Controller
         return TRUE;
     }
 
-
-
     private function _captcha()
     {
         $params = array(
@@ -185,11 +183,40 @@ class Auth extends CI_Controller
         }
     }
 
+    public function register()
+    {
+        $username = $this->session->userdata("username");
+        $role = $this->session->userdata("role");
+
+        if ($username) {
+            if ($role == "penduduk") {
+                redirect("surat");
+            } else {
+                redirect("dashboard");
+            }
+        }
+
+        $this->form_validation->set_rules('username', 'Username', 'trim|required');
+        $this->form_validation->set_rules('password', 'Password', 'trim|required');
+
+        if ($this->form_validation->run() == false) {
+            $data['title'] = 'Registrasi';
+            $this->load->view('auth/register', $data);
+        } else {
+            $this->_register();
+        }
+    }
+
+    private function _register()
+    {
+        dd(1);
+    }
+
+    public function send_verification_code() {}
+
     public function logout()
     {
         $this->session->sess_destroy();
-        // $this->session->unset_userdata('username');
-        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Anda berhasil logout!</div>');
-        redirect('auth');
+        redirect();
     }
 }

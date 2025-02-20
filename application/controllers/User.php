@@ -23,28 +23,30 @@ class User extends CI_Controller
 
     public function create()
     {
-        $username = $this->input->post('username');
-        $user_password = $this->input->post('password');
-
-        $hashed_password = password_hash($user_password, PASSWORD_DEFAULT);
-
-        $data = array(
-            'id_kependudukan' => $this->input->post('id_kependudukan'),
-            'username' => $username,
-            'password' => $hashed_password,
-            'role' => $this->input->post('role'),
-        );
+        $username = htmlspecialchars($this->input->post('username', true));
+        $password = htmlspecialchars($this->input->post('password', true));
 
         $is_exist_username = $this->db->get_where('user', array('username' => $username))->num_rows() > 0;
+
         if ($is_exist_username) {
             set_alert("Username '$username' telah terpakai, Mohon inputkan username baru.", 'danger');
+            redirect('user');
+        }
+
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $data = array(
+            'id_kependudukan' => htmlspecialchars($this->input->post('id_kependudukan', true)),
+            'username' => $username,
+            'password' => $hashed_password,
+            'role' => htmlspecialchars($this->input->post('role', true)),
+        );
+
+        $result = $this->db->insert('user', $data);
+        if ($result) {
+            set_alert('Berhasil Menambahkan User baru', 'success');
         } else {
-            $result = $this->db->insert('user', $data);
-            if ($result) {
-                set_alert('Berhasil Menambahkan User baru', 'success');
-            } else {
-                set_alert('Gagal Menambahkan User baru', 'danger');
-            }
+            set_alert('Gagal Menambahkan User baru', 'danger');
         }
 
         redirect('user');

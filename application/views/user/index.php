@@ -60,9 +60,9 @@
                                                         </button>
                                                     <?php else : ?>
                                                         <?php $user_update = "$item->username,$item->password,$item->role" ?>
-                                                        <button type="button" <?= $item->role === 'sekretaris desa' ? 'disabled' : '' ?> class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('edit', '<?= $user_update ?>', '<?= $item->id_penduduk ?>')">
+                                                        <!-- <button type="button" <?= $item->role === 'sekretaris desa' ? 'disabled' : '' ?> class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('edit', '<?= $user_update ?>', '<?= $item->id_penduduk ?>')">
                                                             <i class="bi bi-pencil-square"></i> Edit
-                                                        </button>
+                                                        </button> -->
                                                         <a href="<?= base_url("user/delete/$item->id_penduduk") ?>" type="button" class="btn btn-outline-danger <?= $item->role === 'sekretaris desa' ? 'disabled' : '' ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
                                                             <i class="bi bi-trash"></i> Hapus
                                                         </a>
@@ -89,7 +89,7 @@
                     <h1 class="modal-title fs-5 text-capitalize" id="modal_form"></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="modal-form" method="post" action="<?= base_url('surat/no_surat_create') ?>" autocomplete="off">
+                <form action="user/create" id="modal-form" autocomplete="off">
                     <div class="modal-body">
                         <div class="row g-3">
                             <input type="text" name="id_kependudukan" id="id_kependudukan" hidden>
@@ -98,7 +98,7 @@
                                 <input type="text" name="username" id="username" class="form-control" required>
                             </div>
                             <div class="form-group col-m-6 col-12">
-                                <label for="password1" class="form-label">Perbarui Password</label>
+                                <label for="password1" class="form-label">Masukan Password</label>
                                 <input type="password" name="password1" id="password1" class="form-control" required>
                                 <div style="position: relative;">
                                     <i id="eye" hidden class="bi bi-eye" style="position: absolute; right: 10px; top: -30px; cursor: pointer;"></i>
@@ -199,24 +199,76 @@
             const msgError1 = document.querySelector('#msg-error1');
             const msgError2 = document.querySelector('#msg-error2');
 
+            let isValid_pass1 = true;
+            let isValid_pass2 = true;
+
+            // Validasi password1
             if (password1.length < 8) {
                 msgError1.innerHTML = 'Password harus minimal 8 karakter.';
+                isValid_pass1 = false;
             } else if (!/[A-Z]/.test(password1)) {
                 msgError1.innerHTML = 'Password harus mengandung setidaknya satu huruf besar.';
+                isValid_pass1 = false;
             } else if (!/[a-z]/.test(password1)) {
                 msgError1.innerHTML = 'Password harus mengandung setidaknya satu huruf kecil.';
+                isValid_pass1 = false;
             } else if (!/[0-9]/.test(password1)) {
                 msgError1.innerHTML = 'Password harus mengandung setidaknya satu angka.';
+                isValid_pass1 = false;
             } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password1)) {
                 msgError1.innerHTML = 'Password harus mengandung setidaknya satu karakter spesial.';
-            } else msgError1.innerHTML = '';
+                isValid_pass1 = false;
+            } else {
+                msgError1.innerHTML = '';
+                isValid_pass1 = true;
+            }
 
+            // Validasi kecocokan password
             if (password1 !== password2) {
                 msgError2.innerHTML = 'Password yang anda masukan tidak sesuai.';
-            } else msgError2.innerHTML = '';
+                isValid_pass2 = false;
+            } else {
+                msgError2.innerHTML = '';
+                isValid_pass2 = true;
+            }
+
+            // Jika validasi berhasil
+            if (isValid_pass1 && isValid_pass2) {
+                // Redirect dengan metode POST menggunakan Form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `<?= base_url('user/create') ?>`; // Ubah sesuai dengan fungsi `base_url` di server Anda
+
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'hidden';
+                passwordInput.name = 'password';
+                passwordInput.value = password1;
+
+                const usernameInput = document.createElement('input');
+                usernameInput.type = 'hidden';
+                usernameInput.name = 'username';
+                usernameInput.value = e.target.querySelector('#username').value;
+
+                const id_kependudukanInput = document.createElement('input');
+                id_kependudukanInput.type = 'hidden';
+                id_kependudukanInput.name = 'id_kependudukan';
+                id_kependudukanInput.value = e.target.querySelector('#id_kependudukan').value;
+
+                const roleInput = document.createElement('input');
+                roleInput.type = 'hidden';
+                roleInput.name = 'role';
+                roleInput.value = e.target.querySelector('#role').value;
 
 
-        })
+                form.appendChild(id_kependudukanInput);
+                form.appendChild(usernameInput);
+                form.appendChild(passwordInput);
+                form.appendChild(roleInput);
+                document.body.appendChild(form);
+
+                form.submit();
+            }
+        });
     </script>
     <!-- End Script Validate Password -->
 

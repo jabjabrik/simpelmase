@@ -91,7 +91,6 @@ class Account extends CI_Controller
 
     public function changepassword_change()
     {
-
         $username = $this->session->userdata('username');
         $password1 = $this->input->post('password1');
         $password2 = $this->input->post('password2');
