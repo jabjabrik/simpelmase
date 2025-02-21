@@ -29,34 +29,23 @@
                                         <h1 class="h4 text-gray-900 mb-4"><i class="bi bi-person-lock"></i> Login Web Simpelmase</h1>
                                     </div>
                                     <?= $this->session->flashdata('message'); ?>
-                                    <?= form_open('auth', ['id' => 'modal-form', 'autocomplete' => 'off', 'class' => 'user']); ?>
-                                    <?= form_error('username', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
-                                    <div class="form-floating mt-2 mb-4">
-                                        <input type="text" name="username" class="form-control" id="username" placeholder="" value="<?php echo set_value('username'); ?>">
-                                        <label for="username">Masukan Username / Email</label>
-                                    </div>
-
-                                    <?= form_error('password', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
-                                    <div class="form-floating mt-2">
-                                        <input type="password" name="password" class="form-control" id="password" placeholder="" value="<?php echo set_value('password'); ?>">
-                                        <label for="password">Masukan Password</label>
-                                    </div>
-
-                                    <div style="position: relative;">
-                                        <i id="eye" hidden class="bi bi-eye" style="position: absolute; right: 10px; top: -40px; cursor: pointer;"></i>
-                                        <i id="eye" class="bi bi-eye-slash" style="position: absolute; right: 10px; top: -40px; cursor: pointer;"></i>
-                                    </div>
-                                    <div class="mt-3 mb-3">
-                                        <label>Captcha</label>
-                                        <?= $captcha_img ?>
-                                    </div>
-                                    <?= form_error('captcha', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
-                                    <div class="form-floating mt-2">
-                                        <input type="text" name="captcha" class="form-control" id="captcha" placeholder="">
-                                        <label for="captcha">Masukan Captcha</label>
-                                    </div>
-                                    <input type="submit" value="Login" class="btn mt-4 btn-primary btn-user btn-block">
-                                    <?= form_close(); ?>
+                                    <form id="modal-form" action="<?= base_url('auth'); ?>" autocomplete="off" method="POST">
+                                        <?= form_error('username', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
+                                        <div class="form-floating mt-2 mb-4">
+                                            <input type="text" name="username" class="form-control" id="username" placeholder="" value="<?php echo set_value('username'); ?>">
+                                            <label for="username">Masukan Username / Email</label>
+                                        </div>
+                                        <?= form_error('password', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
+                                        <div class="form-floating mt-2">
+                                            <input type="password" name="password" class="form-control" id="password" placeholder="" value="<?php echo set_value('password'); ?>">
+                                            <label for="password">Masukan Password</label>
+                                        </div>
+                                        <div style="position: relative;">
+                                            <i id="eye" hidden class="bi bi-eye" style="position: absolute; right: 10px; top: -40px; cursor: pointer;"></i>
+                                            <i id="eye" class="bi bi-eye-slash" style="position: absolute; right: 10px; top: -40px; cursor: pointer;"></i>
+                                        </div>
+                                        <input type="submit" value="Login" class="btn mt-4 btn-primary btn-user btn-block">
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -8,8 +8,8 @@ class Auth extends CI_Controller
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->model('user_model');
-        $this->load->helper('captcha');
         $this->load->model('kependudukan_model');
+        $this->load->model('base_model');
     }
 
     public function index()
@@ -27,14 +27,13 @@ class Auth extends CI_Controller
 
         $this->form_validation->set_rules('username', 'Username', 'trim|callback_validate_username');
         $this->form_validation->set_rules('password', 'Password', 'trim|callback_validate_password');
-        // $this->form_validation->set_rules('captcha', 'Captcha', 'callback_validate_captcha');
 
-        if ($this->form_validation->run() == false) {
+        if ($this->form_validation->run() == FALSE) {
             $data['title'] = 'Login Page';
-            $data['captcha_img'] = $this->_captcha();
             $this->load->view('auth/login', $data);
         } else {
-            $this->_login();
+            $username = $this->input->post('username');
+            $this->_login($username);
         }
     }
 
@@ -45,13 +44,13 @@ class Auth extends CI_Controller
             return FALSE;
         }
 
-        $this->db->where('username', $username);
-        $query = $this->db->get('user');
+        $user = $this->base_model->get_one_data_by('user', 'username', $username);
 
-        if ($query->num_rows() === 0) {
+        if (is_null($user)) {
             $this->form_validation->set_message('validate_username', 'Username tidak ditemukan');
             return FALSE;
         }
+
         return TRUE;
     }
 
@@ -63,156 +62,37 @@ class Auth extends CI_Controller
         }
 
         $username = $this->input->post('username');
-        $this->db->where('username', $username);
-        $query = $this->db->get('user');
+        $user = $this->base_model->get_one_data_by('user', 'username', $username);
 
-        if ($query->num_rows() == 0) {
+        if (is_null($user)) {
             $this->form_validation->set_message('validate_password', '');
             return FALSE;
         }
 
-        $user = $query->row();
-
-        // Cek apakah pengguna sudah mencapai batas percobaan login
-        $current_time = time();
-        $last_attempt_time = strtotime($user->last_login_attempt);
-
-        $time  = 180; // 3mnt
-        if ($user->login_attempts >= 5) {
-            // Jika 5 kali salah
-            if (($current_time - $last_attempt_time) < $time) {
-                // kurang dari 3 menit
-                $remaining_time = $time - ($current_time - $last_attempt_time);
-                $this->form_validation->set_message("validate_password", "Terlalu banyak percobaan login. Silakan coba lagi setelah " . ceil($remaining_time / 60) . " menit.");
-                return FALSE;
-            } else {
-                $this->user_model->reset_login_attempts($user->username);
-            }
-        }
-
-        if (password_verify($password, $user->password)) {
-            $this->user_model->reset_login_attempts($user->username);
-            return TRUE;
-        } else {
-            $this->user_model->increment_login_attempts($user->username);
+        if (!password_verify($password, $user->password)) {
             $this->form_validation->set_message('validate_password', 'Password salah');
             return FALSE;
         }
-    }
 
-    public function validate_captcha($captcha)
-    {
-        if (empty($captcha)) {
-            $this->form_validation->set_message('validate_captcha', 'Silahkan masukan captcha');
-            return FALSE;
-        }
-
-        if ($this->session->userdata('captcha_word') !== $captcha) {
-            $this->form_validation->set_message('validate_captcha', 'Captcha tidak sesuai');
-            return FALSE;
-        }
         return TRUE;
     }
 
-    private function _captcha()
+    private function _login($username)
     {
-        $params = array(
-            'img_path'      => './captcha-images/',
-            'img_url'       => base_url() . 'captcha-images/',
-            'font_path'     => './path/to/fonts/texb.ttf',
-            'img_width'     => 150,
-            'img_height'    => 30,
-            'expiration'    => 7200,
-            'word_length'   => 5,
-            'font_size'     => 16,
-            'img_id'        => 'Imageid',
-            'pool'          => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        $user = $this->base_model->get_one_data_by('user', 'username', $username);
 
-            // White background and border, black text and red grid
-            'colors'        => array(
-                'background'    => array(255, 255, 255),
-                'border'        => array(255, 255, 255),
-                'text'          => array(0, 0, 0),
-                'grid'          => array(255, 40, 40)
-            )
-        );
+        $data = [
+            'is_login' => TRUE,
+            'username' => $user->username,
+            'id_kependudukan' => $user->id_kependudukan,
+            'role' => $user->role,
+            'nama' => $this->kependudukan_model->get_kependudukan_by("id_kependudukan", $user->id_kependudukan)->nama,
+        ];
 
-        $cap = create_captcha($params);
-        $captcha_word = $cap['word'];
-        $this->session->set_userdata('captcha_word', $captcha_word);
-        return $cap['image'];
+        $this->session->set_userdata($data);
+
+        redirect("dashboard");
     }
-
-    private function _login()
-    {
-        $username = $this->input->post('username');
-        $password = $this->input->post('password');
-        $user     = $this->user_model->get_user_by("username", $username);
-
-
-        if (isset($user)) {
-            if (password_verify($password, $user->password)) {
-                $data = [
-                    'username'        => $user->username,
-                    'id_kependudukan' => $user->id_kependudukan,
-                    'role'            => $user->role,
-                    'nama'            => $this->kependudukan_model->get_kependudukan_by("id_kependudukan", $user->id_kependudukan)->nama,
-                ];
-
-                $this->session->set_userdata($data);
-
-                $current_date = new DateTime(date('Y-m-d'));
-                $expired_date = new DateTime($user->expired_password);
-
-                if ($user->is_new_user) {
-                    set_alert('Mohon Ubah Kata Sandi Default Anda', 'warning');
-                }
-
-                if ($current_date > $expired_date) {
-                    set_alert('Mohon Ubah Kata Sandi Anda Karena Sudah Melebihi 1 Tahun', 'warning');
-                }
-
-                redirect("dashboard");
-            } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password Salah!</div>');
-                redirect('auth');
-            }
-        } else {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Username tidak ditemukan</div>');
-            redirect('auth');
-        }
-    }
-
-    public function register()
-    {
-        $username = $this->session->userdata("username");
-        $role = $this->session->userdata("role");
-
-        if ($username) {
-            if ($role == "penduduk") {
-                redirect("surat");
-            } else {
-                redirect("dashboard");
-            }
-        }
-
-        $this->form_validation->set_rules('username', 'Username', 'trim|required');
-        $this->form_validation->set_rules('password', 'Password', 'trim|required');
-
-        if ($this->form_validation->run() == false) {
-            $data['title'] = 'Registrasi';
-            $this->load->view('auth/register', $data);
-        } else {
-            $this->_register();
-        }
-    }
-
-    private function _register()
-    {
-        dd(1);
-    }
-
-    public function send_verification_code() {}
 
     public function logout()
     {
