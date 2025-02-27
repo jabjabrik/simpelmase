@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/img/favicon/favicon-16x16.png'); ?>">
 <link rel="manifest" href="<?= base_url('assets/img/favicon/site.webmanifest'); ?>">
 
-<title>Simpelmas | <?= $title ?></title>
+<title>Simpelmase | <?= $title ?></title>
 <!-- DataTables CSS -->
 <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link href="<?= base_url('assets/css/styles.css') ?>" rel="stylesheet" />

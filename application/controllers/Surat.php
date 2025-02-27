@@ -3,12 +3,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Surat extends CI_Controller
 {
+    private $is_penduduk_role, $id_kependudukan;
+
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
+        authorize_user(['sekretaris desa', 'kepala desa', 'penduduk']);
         $this->load->model('surat_model');
         $this->load->model('kependudukan_model');
+        $this->load->model('base_model');
+        $this->is_penduduk_role = $this->session->userdata('role') == 'penduduk';
+        $this->id_kependudukan = $this->session->userdata('id_kependudukan');
     }
 
     public function index()
@@ -28,18 +33,14 @@ class Surat extends CI_Controller
             unlink("./files/img/$sk->foto_kartu_vaksin");
             unlink("./files/img/$sk->foto_kartu_pajak");
         } else if ($surat == 'sk_kematian') {
-            unlink("./files/img/$sk->ft_ktp_pelapor");
-            unlink("./files/img/$sk->ft_kk_jenazah");
-            unlink("./files/img/$sk->ft_ktp_jenazah");
-            unlink("./files/img/$sk->ft_akte_lahir");
+            unlink("./files/img/$sk->foto_ktp_pelapor");
+            unlink("./files/img/$sk->foto_kk_jenazah");
+            unlink("./files/img/$sk->foto_ktp_jenazah");
+            unlink("./files/img/$sk->foto_akte_lahir");
         }
 
-        $result = $this->surat_model->delete_surat($surat, $id);
-        if ($result) {
-            set_alert('Surat Keterangan Berhasil di Hapus', 'success');
-        } else {
-            set_alert('Surat Keterangan Gagal di Hapus', 'danger');
-        }
+        $this->surat_model->delete_surat($surat, $id);
+        set_alert('Surat Keterangan Berhasil di Hapus', 'success');
         redirect("surat/$surat");
     }
 
@@ -65,10 +66,117 @@ class Surat extends CI_Controller
         echo json_encode($response);
     }
 
+    public function accept($role, $surat, $id_surat)
+    {
+        $result = $this->surat_model->get_surat_kependudukan($surat, $id_surat);
+        $this->surat_model->validasi_surat($role, $surat, $id_surat);
+
+
+        if ($result->validasi_sekdes == "proses" && $result->validasi_kades == "proses") {
+            set_alert('Pengajuan Surat Berhasil  di Konfirmasi', 'success');
+            redirect("surat/$surat");
+        }
+
+        $data = [
+            'no_surat' => $result->no_surat,
+            'tanggal_pengajuan' => $result->tanggal_pengajuan,
+            'alamat' => ucwords($result->alamat),
+            'rt' => sprintf("%03d", $result->rt),
+            'rw' => sprintf("%03d", $result->rw),
+            'kecamatan' => ucwords($result->kecamatan),
+            'kelurahan' => ucwords($result->kelurahan),
+        ];
+
+        if ($surat == 'sk_usaha') {
+            $data['nama_usaha'] = ucwords($result->nama_usaha);
+            $data['nik'] = $result->nik;
+            $data['nama'] = ucwords($result->nama);
+            $data['tempat_lahir'] = ucwords($result->tempat_lahir);
+            $data['tanggal_lahir'] = $result->tanggal_lahir;
+            $data['jenis_kelamin'] = ucwords($result->jenis_kelamin);
+            $data['agama'] = ucwords($result->agama);
+            $data['pekerjaan'] = ucwords($result->pekerjaan);
+        }
+        if ($surat == 'sk_domisili') {
+            $data['nama'] = ucwords($result->nama);
+        }
+        if ($surat == 'sk_kematian') {
+            $data['nama_jenazah'] = ucwords($result->nama_jenazah);
+            $data['nik_jenazah'] = ucwords($result->nik_jenazah);
+            $data['tempat_lahir'] = ucwords($result->tempat_lahir);
+            $data['tanggal_lahir'] = ucwords($result->tanggal_lahir);
+            $data['agama'] = ucwords($result->agama);
+            $data['hari_meninggal'] = ucwords($result->hari_meninggal);
+            $data['tanggal_meninggal'] = ucwords($result->tanggal_meninggal);
+            $data['penyebab_meninggal'] = ucwords($result->penyebab_meninggal);
+            $data['tempat_meninggal'] = ucwords($result->tempat_meninggal);
+
+            $this->db->where('nik', $result->nik_jenazah);
+            $this->db->update('kependudukan', array('is_active' => '0'));
+        }
+        if ($surat == 'sk_kelahiran') {
+            $data = array(
+                'no_surat' => $result->no_surat,
+                'tanggal_pengajuan' => $result->tanggal_pengajuan,
+                'nama_bayi' => ucwords($result->nama_bayi),
+                'jenis_kelamin' => ucwords($result->jenis_kelamin),
+                'hari_lahir' => ucwords($result->hari_lahir),
+                'tempat_lahir' => ucwords($result->tempat_lahir),
+                'tanggal_lahir' => $result->tanggal_lahir,
+                'nama_ibu' => ucwords($result->nama_ibu),
+                'agama_ibu' => ucwords($ibu->agama),
+                'pekerjaan_ibu' => ucwords($ibu->pekerjaan),
+                'nama_ayah' => ucwords($ayah->nama),
+                'agama_ayah' => ucwords($ayah->agama),
+                'pekerjaan_ayah' => ucwords($ayah->pekerjaan),
+            );
+        }
+        if ($surat == 'sk_kehilangan') {
+            $data = array(
+                'no_surat' => $result->no_surat,
+                'tanggal_pengajuan' => $result->tanggal_pengajuan,
+                'kehilangan' => $result->kehilangan,
+                'lokasi' => $result->lokasi,
+                'hari' => $result->hari,
+                'tanggal' => $result->tanggal,
+                'nik' => $result->nik,
+                'nama' => ucwords($result->nama),
+                'tempat_lahir' => ucwords($result->tempat_lahir),
+                'tanggal_lahir' => $result->tanggal_lahir,
+                'jenis_kelamin' => ucwords($result->jenis_kelamin),
+                'pekerjaan' => ucwords($result->pekerjaan),
+                'alamat' => ucwords($result->alamat),
+                'rt' => sprintf("%03d", $result->rt),
+                'rw' => sprintf("%03d", $result->rw),
+                'kecamatan' => ucwords($result->kecamatan),
+                'kelurahan' => ucwords($result->kelurahan),
+            );
+        }
+
+        $file_surat = generate_surat($surat, $data);
+        $this->surat_model->set_file_surat($surat, $file_surat, $id_surat);
+        set_alert('Pengajuan Surat Berhasil  di Konfirmasi', 'success');
+        redirect("surat/$surat");
+    }
+
+    public function reject($role, $surat)
+    {
+        $id = $this->input->post('id');
+        $data = array(
+            'notifikasi' => $this->input->post('notifikasi'),
+            "validasi_$role" => 'ditolak'
+        );
+
+        $this->db->where('id', $id);
+        $result = $this->db->update($surat, $data);
+
+        set_alert('Pengajuan Surat Berhasil di Tolak', 'success');
+        redirect("surat/$surat");
+    }
+
     public function sk_usaha()
     {
-        $is_penduduk_role = $this->session->userdata('role') == 'penduduk';
-        $data['sk_usaha'] = $this->surat_model->get_all_surat('sk_usaha', $is_penduduk_role);
+        $data['sk_usaha'] = $this->surat_model->get_all_surat('sk_usaha', $this->is_penduduk_role, $this->id_kependudukan);
         $data['title']    = 'SK Usaha';
         $data['no_surat'] = generate_no_surat('sk_usaha');
         $this->load->view('surat/sk_usaha', $data);
@@ -76,19 +184,14 @@ class Surat extends CI_Controller
 
     public function sk_usaha_create()
     {
-        $id_kependudukan = $this->session->userdata('id_kependudukan');
-        $no_surat = $this->input->post('no_surat');
-
         $data = [
-            'id_kependudukan' => $id_kependudukan,
-            'no_surat' => $no_surat,
+            'id_kependudukan' => $this->id_kependudukan,
+            'no_surat' => $this->input->post('no_surat'),
             'tanggal_pengajuan' => date('Y/m/d'),
             'nama_usaha' => $this->input->post('nama_usaha'),
             'keperluan' => $this->input->post('keperluan'),
             'status_print' => $this->input->post('status_print'),
         ];
-
-        $this->load->library('upload');
 
         $data['foto_ktp'] = upload_file('foto_ktp');
         $data['foto_kartu_pajak'] = upload_file('foto_kartu_pajak');
@@ -100,22 +203,15 @@ class Surat extends CI_Controller
             $data['pas_foto'] = upload_file('pas_foto');
         }
 
-        $result = $this->surat_model->create_surat("sk_usaha", $data);
-
-        if ($result) {
-            set_alert('Pengajuan Surat Keterangan Berhasil Terkirim', 'success');
-        } else {
-            set_alert('Pengajuan Surat Keterangan Gagal Terkirim', 'danger');
-        }
+        $this->base_model->insert('sk_usaha', $data);
+        set_alert('Pengajuan Surat Keterangan Berhasil Terkirim', 'success');
         redirect("surat/sk_usaha");
     }
 
     public function sk_domisili()
     {
-        $is_penduduk_role = $this->session->userdata('role') == 'penduduk';
-        $data['sk_domisili'] = $this->surat_model->get_all_surat('sk_domisili', $is_penduduk_role);
-        $id_kependudukan = $this->session->userdata('id_kependudukan');
-        $data['kependudukan'] = $this->kependudukan_model->get_kependudukan_by('id_kependudukan', $id_kependudukan);
+        $data['sk_domisili'] = $this->surat_model->get_all_surat('sk_domisili', $this->is_penduduk_role, $this->id_kependudukan);
+        $data['kependudukan'] = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $this->id_kependudukan);
         $data['title']       = 'SK Domisili';
         $data['no_surat']    = generate_no_surat('sk_domisili');
         $this->load->view('surat/sk_domisili', $data);
@@ -134,8 +230,6 @@ class Surat extends CI_Controller
             'status_print' => $this->input->post('status_print'),
         );
 
-        $this->load->library('upload');
-
         $data['foto_ktp'] = upload_file('foto_ktp');
 
         if ($_FILES['pas_foto']['name']) {
@@ -148,20 +242,14 @@ class Surat extends CI_Controller
             $data['foto_kartu_pajak'] = upload_file('foto_kartu_pajak');
         }
 
-        $result = $this->surat_model->create_surat("sk_domisili", $data);
-
-        if ($result) {
-            set_alert('Pengajuan Surat Keterangan Berhasil Terkirim', 'success');
-        } else {
-            set_alert('Pengajuan Surat Keterangan Gagal Terkirim', 'danger');
-        }
+        $this->base_model->insert('sk_domisili', $data);
+        set_alert('Pengajuan Surat Keterangan Berhasil Terkirim', 'success');
         redirect("surat/sk_domisili");
     }
 
     public function sk_kematian()
     {
-        $is_penduduk_role    = $this->session->userdata('role') == 'penduduk';
-        $data['sk_kematian'] = $this->surat_model->get_all_surat('sk_kematian', $is_penduduk_role);
+        $data['sk_kematian'] = $this->surat_model->get_all_surat('sk_kematian', $this->is_penduduk_role, $this->id_kependudukan);
         $data['title']       = 'SK Kematian';
         $data['no_surat']    = generate_no_surat('sk_kematian');
         $this->load->view('surat/sk_kematian', $data);
@@ -200,8 +288,7 @@ class Surat extends CI_Controller
 
     public function sk_kelahiran()
     {
-        $is_penduduk_role = $this->session->userdata('role') == 'penduduk';
-        $data['sk_kelahiran'] = $this->surat_model->get_all_surat('sk_kelahiran', $is_penduduk_role);
+        $data['sk_kelahiran'] = $this->surat_model->get_all_surat('sk_kelahiran', $this->is_penduduk_role, $this->id_kependudukan);
         $data['title']        = 'SK Kelahiran';
         $data['no_surat']     = generate_no_surat('sk_kelahiran');
         $this->load->view('surat/sk_kelahiran', $data);
@@ -213,7 +300,9 @@ class Surat extends CI_Controller
             'id_kependudukan' => $this->session->userdata('id_kependudukan'),
             'no_surat' => $this->input->post('no_surat'),
             'nik_ayah' => $this->input->post('nik_ayah'),
+            'nama_ayah' => $this->input->post('nama_ayah'),
             'nik_ibu' => $this->input->post('nik_ibu'),
+            'nama_ibu' => $this->input->post('nama_ibu'),
             'nama_bayi' => $this->input->post('nama_bayi'),
             'jenis_kelamin' => $this->input->post('jenis_kelamin'),
             'hari_lahir' => $this->input->post('hari_lahir'),
@@ -229,7 +318,6 @@ class Surat extends CI_Controller
         $data['foto_buku_nikah'] = upload_file('foto_buku_nikah');
         $data['foto_ktp_ayah'] = upload_file('foto_ktp_ayah');
         $data['foto_ktp_ibu'] = upload_file('foto_ktp_ibu');
-
 
         $result = $this->surat_model->create_surat("sk_kelahiran", $data);
 

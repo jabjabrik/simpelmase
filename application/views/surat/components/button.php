@@ -1,6 +1,6 @@
 <div class="btn-group" role="group">
     <?php if ($this->session->userdata('role') == 'penduduk') : ?>
-        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('tambah')">
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('insert')">
             <i class="bi bi-plus-circle"></i> Tambah
         </button>
     <?php endif ?>

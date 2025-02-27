@@ -29,7 +29,7 @@
                                         <h1 class="h4 text-gray-900 mb-4"><i class="bi bi-person-lock"></i> Login Web Simpelmase</h1>
                                     </div>
                                     <?= $this->session->flashdata('message'); ?>
-                                    <form id="modal-form" action="<?= base_url('auth'); ?>" autocomplete="off" method="POST">
+                                    <form id="modal-form" action="<?= base_url(); ?>" autocomplete="off" method="POST">
                                         <?= form_error('username', '<small class="text-danger mt-3 pl-3 d-block" style="text-align: left;">', '</small>'); ?>
                                         <div class="form-floating mt-2 mb-4">
                                             <input type="text" name="username" class="form-control" id="username" placeholder="" value="<?php echo set_value('username'); ?>">

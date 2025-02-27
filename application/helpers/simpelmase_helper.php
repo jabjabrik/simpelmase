@@ -3,22 +3,42 @@
 use PhpOffice\PhpWord\TemplateProcessor;
 
 
-function is_logged_in()
+// function is_logged_in()
+// {
+//     $CI = &get_instance();
+//     if (!$CI->session->userdata('username')) {
+//         redirect("/");
+//     }
+// }
+
+// function authorize_user()
+// {
+//     $CI = &get_instance();
+//     $role = $CI->session->userdata("role");
+//     if ($role == "penduduk") {
+//         redirect("surat");
+//     }
+// }
+
+
+function authorize_user(array $roles): void
 {
     $CI = &get_instance();
-    if (!$CI->session->userdata('username')) {
-        redirect("/");
+    $role = $CI->session->userdata('role');
+
+    if (!$role) redirect();
+
+    if (!in_array($role, $roles)) {
+        if ($role == 'penduduk') {
+            redirect('surat');
+        } else {
+            redirect('dashboard');
+        }
     }
 }
 
-function authorize_user()
-{
-    $CI = &get_instance();
-    $role = $CI->session->userdata("role");
-    if ($role == "penduduk") {
-        redirect("surat");
-    }
-}
+
+
 
 function dd($data)
 {

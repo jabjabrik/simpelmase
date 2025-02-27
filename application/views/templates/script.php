@@ -19,8 +19,8 @@
                 orderable: false
             }],
             "lengthMenu": [
-                [5, 25, 100],
-                [5, 25, 100]
+                [10, 25, 100],
+                [10, 25, 100]
             ],
             "language": {
                 "lengthMenu": "_MENU_",

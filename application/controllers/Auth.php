@@ -7,23 +7,13 @@ class Auth extends CI_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
-        $this->load->model('user_model');
-        $this->load->model('kependudukan_model');
         $this->load->model('base_model');
     }
 
     public function index()
     {
-        $username = $this->session->userdata("username");
-        $role = $this->session->userdata("role");
-
-        if ($username) {
-            if ($role == "penduduk") {
-                redirect("surat");
-            } else {
-                redirect("dashboard");
-            }
-        }
+        $is_login = $this->session->userdata('is_login');
+        if ($is_login) redirect('dashboard');
 
         $this->form_validation->set_rules('username', 'Username', 'trim|callback_validate_username');
         $this->form_validation->set_rules('password', 'Password', 'trim|callback_validate_password');
@@ -80,17 +70,17 @@ class Auth extends CI_Controller
     private function _login($username)
     {
         $user = $this->base_model->get_one_data_by('user', 'username', $username);
+        $kependudukan = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $user->id_kependudukan);
 
         $data = [
             'is_login' => TRUE,
             'username' => $user->username,
             'id_kependudukan' => $user->id_kependudukan,
             'role' => $user->role,
-            'nama' => $this->kependudukan_model->get_kependudukan_by("id_kependudukan", $user->id_kependudukan)->nama,
+            'nama' => $kependudukan->nama
         ];
 
         $this->session->set_userdata($data);
-
         redirect("dashboard");
     }
 

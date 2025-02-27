@@ -1,8 +1,20 @@
 <?php $alert = $this->session->flashdata('alert'); ?>
-
 <?php if ($alert) : ?>
-    <div class="alert alert-<?= $alert['color'] ?> alert-dismissible fade show" role="alert">
-        <?= $alert['message']; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast align-items-center text-bg-<?= $alert['color'] ?> border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body text-white">
+                    <?= $alert['message'] ?>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
-<?php endif ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var toastElement = document.getElementById('liveToast');
+            var toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        });
+    </script>
+<?php endif; ?>

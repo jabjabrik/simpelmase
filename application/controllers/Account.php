@@ -6,11 +6,9 @@ class Account extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
         $this->load->model('user_model');
         $this->load->library('form_validation');
-
-        // authorize_user();
+        authorize_user(['sekretaris desa']);
     }
 
     public function email()
