@@ -32,10 +32,6 @@
                             Data Surat Keterangan Kelahiran
                         </div>
                         <div class="card-body" style="overflow: auto;">
-                            <!-- SK Kelahiran Component -->
-                            <?php $data['jenis_surat'] = 'sk_kelahiran'; ?>
-                            <?php $data['type'] = 'surat' ?>
-
                             <table id="datatables" class="table table-striped table-bordered text-capitalize" style="white-space: nowrap; font-size: .9em;">
                                 <thead>
                                     <tr>
@@ -97,7 +93,7 @@
                                                     <button id="detailBtn" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('detail', <?= $params ?>)">
                                                         <i class="bi bi-eye-fill"></i>
                                                     </button>
-                                                    <?php $data['jenis_surat'] = 'sk_usaha'; ?>
+                                                    <?php $data['jenis_surat'] = 'sk_kelahiran'; ?>
                                                     <?php $this->view('surat/components/action', $data); ?>
                                                 </div>
                                             </td>
