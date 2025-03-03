@@ -6,18 +6,48 @@ class Kependudukan extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
-        authorize_user();
+        authorize_user(['sekretaris desa', 'kepala desa']);
         $this->load->model('kependudukan_model');
-        $this->load->model('user_model');
+        $this->load->model('base_model');
     }
+
     public function index()
     {
         $data['kependudukan'] = $this->kependudukan_model->get_all_kependudukan();
         $data['title'] = 'Kependudukan';
-        $data['title_table'] = "Data Kependudukan Sumberkledung";
         $this->load->view('kependudukan/index', $data);
     }
+
+    public function nik($nik = null)
+    {
+        if (is_null($nik)) redirect('kependudukan');
+        $penduduk = $this->base_model->get_one_data_by('kependudukan', 'nik', $nik);
+        if (is_null($penduduk)) redirect('kependudukan');
+
+        redirect("kependudukan/kk/$penduduk->no_kk");
+    }
+
+    public function kk($no_kk = null)
+    {
+        if (is_null($no_kk)) redirect('kependudukan');
+        $penduduk = $this->base_model->get_one_data_by('kependudukan', 'no_kk', $no_kk);
+        if (is_null($penduduk)) redirect('kependudukan');
+
+        $data['title'] = 'Kependudukan';
+        $data['penduduk'] = $this->kependudukan_model->get_penduduk($no_kk);
+        $data['keluarga'] = $this->kependudukan_model->get_keluarga($no_kk);
+        $data['aset_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset bergerak');
+        $data['aset_tidak_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset tidak bergerak');
+        $data['bansos'] = $this->kependudukan_model->get_bansos_penduduk($no_kk);
+        $data['no_kk'] = $no_kk;
+        $this->load->view('kependudukan/penduduk', $data);
+    }
+
+
+
+
+
+
 
     public function rt($rt)
     {

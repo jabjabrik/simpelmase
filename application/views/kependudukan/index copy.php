@@ -21,14 +21,18 @@
                     <!-- Alert -->
                     <?php $this->view('templates/alert'); ?>
                     <!-- End Alert -->
-                    <h3 class="mt-4">Kelola Data Penduduk</h3>
-                    <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Data Penduduk</li>
-                    </ol>
 
+                    <?php if ($this->session->userdata('role') == 'sekretaris desa') : ?>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('tambah')">
+                                <i class="bi bi-plus-circle"></i> Tambah
+                            </button>
+                        </div>
+                    <?php endif ?>
                     <div class="card mb-4 mx-0">
                         <div class="card-header">
-                            <i class="fas fa-table me-1"></i> Data Kependudukan Sumberkledung
+                            <i class="fas fa-table me-1"></i>
+                            <?= $title_table ?>
                         </div>
                         <div class="card-body" style="overflow: auto;">
                             <table id="datatables" class="table table-striped table-bordered text-capitalize" style="white-space: nowrap; font-size: .9em;">
@@ -37,9 +41,10 @@
                                         <th>No</th>
                                         <th>NIK</th>
                                         <th>No KK</th>
-                                        <th>Nama Kepala Keluarga</th>
+                                        <th>Nama</th>
                                         <th>Jenkel</th>
-                                        <th>Pekerjaan</th>
+                                        <!-- <th>Pendidikan</th> -->
+                                        <th>Alamat</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -52,11 +57,21 @@
                                             <td><?= $item->no_kk ?></td>
                                             <td><?= $item->nama ?></td>
                                             <td><?= $item->jenis_kelamin ?></td>
-                                            <td><?= $item->pekerjaan ?></td>
+                                            <!-- <td><?= $item->pendidikan ?></td> -->
+                                            <td><?= $item->alamat ?></td>
                                             <td>
-                                                <a href="<?= base_url("kependudukan/kk/$item->no_kk") ?>" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-box-arrow-right"></i> Lihat
-                                                </a>
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Basic outlined example">
+                                                    <?php $penduduk = "$item->nik,$item->no_kk,$item->nama,$item->jenis_kelamin,$item->tanggal_lahir,$item->tempat_lahir,$item->agama,$item->hubungan_keluarga,$item->status_perkawinan,$item->pendidikan,$item->nama_ibu,$item->nama_ayah,$item->pekerjaan,$item->alamat,$item->rt,$item->rw,$item->kelurahan,$item->kecamatan,$item->gaji,$item->ktp,$item->foto_rumah" ?>
+                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('detail', '<?= $penduduk ?>')">
+                                                        <i class="bi bi-eye-fill"></i>
+                                                    </button>
+                                                    <?php if ($this->session->userdata('role') == 'sekretaris desa') : ?>
+                                                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modal_form" onclick="setForm('edit', '<?= $penduduk ?>', '<?= $item->id_kependudukan ?>')">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </button>
+                                                        <a href="<?= base_url("kependudukan/delete/$item->id_kependudukan") ?>" type="button" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');"><i class="bi bi-trash"></i></a>
+                                                    <?php endif ?>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php $no++ ?>

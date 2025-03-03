@@ -139,22 +139,22 @@
                             </div>
                             <div class="form-group col-lg-6 col-md-12">
                                 <label class="form-label">*Upload Foto KTP</label>
-                                <input type="file" class="form-control-file" id="foto_ktp_input" name="foto_ktp" required>
+                                <input type="file" class="form-control-file" id="foto_ktp_input" name="foto_ktp" required accept="image/*">
                                 <img id="foto_ktp" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-lg-6 col-md-12">
                                 <label class="form-label">Upload Pas Foto</label>
-                                <input type="file" class="form-control-file" id="pas_foto_input" name="pas_foto">
+                                <input type="file" class="form-control-file" id="pas_foto_input" name="pas_foto" accept="image/*">
                                 <img id="pas_foto" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-lg-6 col-md-12">
                                 <label class="form-label">Upload Foto Kartu Pajak</label>
-                                <input type="file" class="form-control-file" id="foto_kartu_pajak_input" name="foto_kartu_pajak">
+                                <input type="file" class="form-control-file" id="foto_kartu_pajak_input" name="foto_kartu_pajak" accept="image/*">
                                 <img id="foto_kartu_pajak" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-lg-6 col-md-12">
                                 <label class="form-label">Upload Foto Kartu Vaksin</label>
-                                <input type="file" class="form-control-file" id="foto_kartu_vaksin_input" name="foto_kartu_vaksin">
+                                <input type="file" class="form-control-file" id="foto_kartu_vaksin_input" name="foto_kartu_vaksin" accept="image/*">
                                 <img id="foto_kartu_vaksin" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-lg-6 col-md-12">

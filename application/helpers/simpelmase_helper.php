@@ -2,25 +2,6 @@
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
-
-// function is_logged_in()
-// {
-//     $CI = &get_instance();
-//     if (!$CI->session->userdata('username')) {
-//         redirect("/");
-//     }
-// }
-
-// function authorize_user()
-// {
-//     $CI = &get_instance();
-//     $role = $CI->session->userdata("role");
-//     if ($role == "penduduk") {
-//         redirect("surat");
-//     }
-// }
-
-
 function authorize_user(array $roles): void
 {
     $CI = &get_instance();
@@ -37,6 +18,60 @@ function authorize_user(array $roles): void
     }
 }
 
+function convert_usia(string $tanggal_lahir): string
+{
+    $tanggal_lahir = new DateTime($tanggal_lahir);
+    $now = new DateTime();
+    $selisih = $now->diff($tanggal_lahir);
+    $usia = $selisih->y;
+    return $usia;
+}
+
+function convert_kelas_usia(string $usia): string
+{
+    if ($usia < 7) {
+        return "Tidak/Belum Sekolah";
+    } else if ($usia >= 7 && $usia <= 12) {
+        return $usia - 6 . " SD/Sederajat";
+    } else if ($usia >= 13 && $usia <= 15) {
+        return $usia - 6 . " SMP/Sederajat";
+    } else if ($usia >= 16 && $usia <= 18) {
+        return $usia - 6 . " SMA/Sederajat";
+    } else {
+        return "Lulus";
+    }
+}
+
+function convert_kelas_real($kelas, $kelas_update)
+{
+
+
+    $tanggal_update = new DateTime($kelas_update);
+    $tahun_update = (int) $tanggal_update->format('Y');
+
+    // Tentukan tanggal tahun ajaran baru
+    $tahun_ajaran_baru = new DateTime("$tahun_update-07-01");
+
+    // Ambil tanggal hari ini
+    $sekarang = new DateTime();
+
+    // Jika sudah melewati 1 Juli tahun ini, maka kelas naik
+    if ($sekarang >= $tahun_ajaran_baru) {
+        $kelas_baru = $kelas + 1;
+    } else {
+        $kelas_baru = $kelas;
+    }
+
+    if ($kelas_baru >= 1 && $kelas_baru <= 6) {
+        return $kelas_baru . " SD/Sederajat";
+    } else if ($kelas_baru >= 7 && $kelas_baru <= 9) {
+        return $kelas_baru . " SM/SederajatP";
+    } else if ($kelas_baru >= 10 && $kelas_baru <= 12) {
+        return $kelas_baru . " SMA/Sederajat";
+    } else {
+        return "Lulus";
+    }
+}
 
 
 

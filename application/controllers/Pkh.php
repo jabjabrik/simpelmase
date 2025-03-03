@@ -6,8 +6,7 @@ class Pkh extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        is_logged_in();
-        authorize_user();
+        authorize_user(['sekretaris desa', 'kepala desa']);
     }
 
     public function index()

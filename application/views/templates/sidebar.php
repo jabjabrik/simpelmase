@@ -18,23 +18,17 @@
                         Kelola User
                     </a>
                     <div class="sb-sidenav-menu-heading">Kependudukan</div>
-                    <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
+                    <a class="nav-link <?= $title == 'Kependudukan' ? 'active' : '' ?>" href="<?= base_url('kependudukan') ?>">
                         <div class="sb-nav-link-icon">
                             <i class="bi bi-clipboard-data"></i>
                         </div>
                         Data Penduduk
                     </a>
-                    <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
+                    <a class="nav-link <?= $title == 'Pendataan KTP' ? 'active' : '' ?>" href="<?= base_url('ktp') ?>">
                         <div class="sb-nav-link-icon">
-                            <i class="bi bi-cash-stack"></i>
+                            <i class="bi bi-file-earmark-post"></i>
                         </div>
-                        Aset Penduduk
-                    </a>
-                    <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
-                        <div class="sb-nav-link-icon">
-                            <i class="fas fa-chart-area"></i>
-                        </div>
-                        PKH
+                        Pendataan KTP
                     </a>
                 <?php endif ?>
 
@@ -63,7 +57,7 @@
                     </div>
                     SK. Kelahiran
                 </a>
-                <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
                     <div class="sb-nav-link-icon">
                         <i class="bi bi-envelope"></i>
                     </div>

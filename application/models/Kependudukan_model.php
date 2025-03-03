@@ -3,12 +3,42 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Kependudukan_model extends CI_Model
 {
-    function get_all_kependudukan($is_active = false)
+    function get_all_kependudukan(): array
     {
-        $where = [];
-        if ($is_active) $where["is_active"] = "1";
-        return $this->db->get_where('kependudukan', $where)->result();
+        $query = "SELECT * FROM kependudukan WHERE kependudukan.hubungan_keluarga = 'kepala keluarga'";
+        return $this->db->query($query)->result();
     }
+
+    function get_penduduk(string $no_kk): array
+    {
+        $query = "SELECT * FROM kependudukan WHERE kependudukan.no_kk = '$no_kk'";
+        return $this->db->query($query)->result();
+    }
+
+    function get_keluarga(string $no_kk): object
+    {
+        $query = "SELECT * FROM keluarga WHERE keluarga.no_kk = '$no_kk'";
+        return $this->db->query($query)->row();
+    }
+
+    function get_aset_penduduk(string $no_kk, string $kategori): array
+    {
+        $query = "SELECT * FROM aset WHERE aset.no_kk = '$no_kk' AND aset.kategori = '$kategori'";
+        return $this->db->query($query)->result();
+    }
+
+    function get_bansos_penduduk(string $no_kk): array
+    {
+        $query = "SELECT * FROM bansos WHERE bansos.no_kk = '$no_kk'";
+        return $this->db->query($query)->result();
+    }
+
+
+
+
+
+
+
 
     function get_kependudukan_count()
     {
@@ -46,8 +76,8 @@ class Kependudukan_model extends CI_Model
     {
 
         $query = "SELECT rt, COUNT(*) AS jumlah
-            FROM kependudukan
-            WHERE kependudukan.rt = '$rt'
+            FROM keluarga
+            WHERE keluarga.rt = '$rt'
             GROUP BY rt";
         return $this->db->query($query)->row('jumlah');
     }
@@ -55,8 +85,8 @@ class Kependudukan_model extends CI_Model
     function get_kependudukan_rw_count($rw)
     {
         $query = "SELECT rw, COUNT(*) AS jumlah
-            FROM kependudukan
-            WHERE kependudukan.rw = '$rw'
+            FROM keluarga
+            WHERE keluarga.rw = '$rw'
             GROUP BY rw";
         return $this->db->query($query)->row('jumlah');
     }

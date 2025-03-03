@@ -32,10 +32,6 @@
                             Data Surat Keterangan Kematian
                         </div>
                         <div class="card-body" style="overflow: auto;">
-                            <!-- SK Kematian Component -->
-                            <?php $data['jenis_surat'] = 'sk_kematian'; ?>
-                            <?php $data['type'] = 'surat' ?>
-
                             <table id="datatables" class="table table-striped table-bordered text-capitalize" style="white-space: nowrap; font-size: .9em;">
                                 <thead>
                                     <tr>
@@ -163,22 +159,22 @@
                             </div>
                             <div class="form-group col-md-12 col-lg-6">
                                 <label class="form-label">*Foto KTP Pelapor</label>
-                                <input type="file" class="form-control-file" id="foto_ktp_pelapor_input" name="foto_ktp_pelapor" required>
+                                <input type="file" class="form-control-file" id="foto_ktp_pelapor_input" name="foto_ktp_pelapor" required accept="image/*">
                                 <img id="foto_ktp_pelapor" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-md-12 col-lg-6">
                                 <label class="form-label">*Foto KK Jenazah</label>
-                                <input type="file" class="form-control-file" id="foto_kk_jenazah_input" name="foto_kk_jenazah" required>
+                                <input type="file" class="form-control-file" id="foto_kk_jenazah_input" name="foto_kk_jenazah" required accept="image/*">
                                 <img id="foto_kk_jenazah" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-md-12 col-lg-6">
                                 <label class="form-label">*Foto KTP Jenazah</label>
-                                <input type="file" class="form-control-file" id="foto_ktp_jenazah_input" name="foto_ktp_jenazah" required>
+                                <input type="file" class="form-control-file" id="foto_ktp_jenazah_input" name="foto_ktp_jenazah" required accept="image/*">
                                 <img id="foto_ktp_jenazah" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-md-12 col-lg-6">
                                 <label class="form-label">*Foto Akte Lahir Jenazah</label>
-                                <input type="file" class="form-control-file" id="foto_akte_lahir_input" name="foto_akte_lahir" required>
+                                <input type="file" class="form-control-file" id="foto_akte_lahir_input" name="foto_akte_lahir" required accept="image/*">
                                 <img id="foto_akte_lahir" class="img-fluid d-block" style="max-height: 200px;">
                             </div>
                             <div class="form-group col-md-12 col-lg-6">
