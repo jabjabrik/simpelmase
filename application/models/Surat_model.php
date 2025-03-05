@@ -24,9 +24,10 @@ class Surat_model extends CI_Model
 
     public function get_surat_kependudukan(string $surat, string $id_surat): object
     {
-        $query = "SELECT $surat.*, kependudukan.* 
+        $query = "SELECT $surat.*, kependudukan.*, keluarga.*
         FROM $surat 
         JOIN kependudukan ON $surat.id_kependudukan = kependudukan.id_kependudukan 
+        JOIN keluarga ON kependudukan.no_kk = keluarga.no_kk
         WHERE $surat.id = '$id_surat'";
         return $this->db->query($query)->row();
     }

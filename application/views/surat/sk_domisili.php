@@ -181,9 +181,9 @@
 
         const setForm = (title, data = null) => {
             modal_title.innerHTML = `${title} Surat Keterangan Domisili`
-            const kependudukan = <?= json_encode($kependudukan) ?>;
+            const keluarga = <?= json_encode($keluarga) ?>;
 
-            domisili.innerHTML = `${kependudukan.alamat}, RT ${kependudukan.rt}/RW ${kependudukan.rw}, Desa ${kependudukan.kelurahan}, Kecamatan ${kependudukan.kecamatan} Kabupaten Probolinggo`
+            domisili.innerHTML = `${keluarga.alamat}, RT ${keluarga.rt}/RW ${keluarga.rw}, Desa ${keluarga.kelurahan}, Kecamatan ${keluarga.kecamatan} Kabupaten Probolinggo`
 
             const fields = ['no_surat', 'keperluan', 'status_print', 'foto_ktp', 'pas_foto', 'foto_kartu_pajak', 'foto_kartu_vaksin'];
             fields.forEach((e, i) => {

@@ -18,10 +18,10 @@ class Dashboard extends CI_Controller
         $data['jumlah_pendidikan'] = $this->kependudukan_model->get_kependudukan_pendidikan_count();
         $data['jumlah_pernikahan'] = $this->kependudukan_model->get_kependudukan_pernikahan_count();
         for ($i = 1; $i <= 16; $i++) {
-            $data["rt$i"] = $this->kependudukan_model->get_kependudukan_rt_count(sprintf("%03d", $i));
+            $data["rt$i"] = $this->kependudukan_model->get_kependudukan_rt_rw('rt', sprintf("%03d", $i));
         }
         for ($i = 1; $i <= 3; $i++) {
-            $data["rw$i"] = $this->kependudukan_model->get_kependudukan_rw_count(sprintf("%03d", $i));
+            $data["rw$i"] = $this->kependudukan_model->get_kependudukan_rt_rw('rw', sprintf("%03d", $i));
         }
 
         $data['title'] = 'Dashboard';

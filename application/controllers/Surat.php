@@ -48,13 +48,8 @@ class Surat extends CI_Controller
     {
         $response;
         if ($nik) {
-            $kependudukan = $this->kependudukan_model->get_all_kependudukan();
-            $kependudukan = array_filter($kependudukan, function ($kependudukan) use ($nik) {
-                return $kependudukan->nik == $nik;
-            });
-
+            $kependudukan = $this->base_model->get_one_data_by('kependudukan', 'nik', $nik);
             if ($kependudukan) {
-                $kependudukan = array_values($kependudukan)[0];
                 $response = ['status' => 'success', 'kependudukan' => $kependudukan];
             } else {
                 $response = ['status' => 'error', 'message' => "Penduduk dengan NIK $nik tidak ditemukan"];
@@ -201,9 +196,10 @@ class Surat extends CI_Controller
     public function sk_domisili()
     {
         $data['sk_domisili'] = $this->surat_model->get_all_surat('sk_domisili', $this->is_penduduk_role, $this->id_kependudukan);
-        $data['kependudukan'] = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $this->id_kependudukan);
-        $data['title']       = 'SK Domisili';
-        $data['no_surat']    = generate_no_surat('sk_domisili');
+        $no_kk = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $this->id_kependudukan)->no_kk;
+        $data['keluarga'] = $this->base_model->get_one_data_by('keluarga', 'no_kk', $no_kk);
+        $data['title'] = 'SK Domisili';
+        $data['no_surat'] = generate_no_surat('sk_domisili');
         $this->load->view('surat/sk_domisili', $data);
     }
 

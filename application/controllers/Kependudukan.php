@@ -13,18 +13,43 @@ class Kependudukan extends CI_Controller
 
     public function index()
     {
-        $data['kependudukan'] = $this->kependudukan_model->get_all_kependudukan();
+
+        $rt = $this->input->get('rt');
+        $rw = $this->input->get('rw');
+
+        $kependudukan = [];
+        $title_page = "Kelola Data Penduduk";
+
+        if ($rt && empty($rw)) {
+            $keluarga = $this->base_model->get_one_data_by('keluarga', 'rt', $rt);
+            if (is_null($keluarga)) redirect('kependudukan');
+            $kependudukan = $this->kependudukan_model->get_all_kependudukan('rt', $rt);
+            $title_page .= " RT $rt";
+        } else if ($rw && empty($rt)) {
+            $keluarga = $this->base_model->get_one_data_by('keluarga', 'rw', $rw);
+            if (is_null($keluarga)) redirect('kependudukan');
+            $kependudukan = $this->kependudukan_model->get_all_kependudukan('rw', $rw);
+            $title_page .= " RW $rw";
+        } else {
+            $kependudukan = $this->kependudukan_model->get_all_kependudukan();
+        }
+
+        $data['kependudukan'] = $kependudukan;
         $data['title'] = 'Kependudukan';
+        $data['title_page'] = $title_page;
         $this->load->view('kependudukan/index', $data);
     }
 
-    public function nik($nik = null)
+    public function cari()
     {
-        if (is_null($nik)) redirect('kependudukan');
+        $nik = $this->input->post('nik', true);
         $penduduk = $this->base_model->get_one_data_by('kependudukan', 'nik', $nik);
-        if (is_null($penduduk)) redirect('kependudukan');
-
-        redirect("kependudukan/kk/$penduduk->no_kk");
+        if (is_null($penduduk)) {
+            set_alert("NIK ($nik) tidak ditemukan", 'danger');
+            redirect("kependudukan");
+        } else {
+            redirect("kependudukan/kk/$penduduk->no_kk");
+        }
     }
 
     public function kk($no_kk = null)
@@ -39,147 +64,258 @@ class Kependudukan extends CI_Controller
         $data['aset_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset bergerak');
         $data['aset_tidak_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset tidak bergerak');
         $data['bansos'] = $this->kependudukan_model->get_bansos_penduduk($no_kk);
-        $data['no_kk'] = $no_kk;
+        $data['informasi_tambahan'] = $this->kependudukan_model->get_informasi_tambahan_penduduk($no_kk);
         $this->load->view('kependudukan/penduduk', $data);
     }
 
-
-
-
-
-
-
-    public function rt($rt)
+    public function edit_keluarga()
     {
-        $data['kependudukan'] = $this->kependudukan_model->get_kependudukan_rt($rt);
-        $data['title'] = 'Kependudukan';
-        $data['title_table'] = "Data Kependudukan Sumberkledung RT " . sprintf("%03d", $rt);
-        $this->load->view('kependudukan/index', $data);
-    }
+        $id_keluarga = $this->input->post('id_keluarga', true);
+        $no_kk =  $this->input->post('no_kk', true);
 
-    public function rw($rw)
-    {
-        $data['kependudukan'] = $this->kependudukan_model->get_kependudukan_rw($rw);
-        $data['title'] = 'Kependudukan';
-        $data['title_table'] = "Data Kependudukan Sumberkledung RW " . sprintf("%03d", $rw);
-        $this->load->view('kependudukan/index', $data);
-    }
-
-    public function create()
-    {
-        $nik = $this->input->post('nik');
         $data = [
-            'nik' => $nik,
-            'no_kk' => $this->input->post('no_kk'),
-            'nama' => $this->input->post('nama'),
-            'jenis_kelamin' => $this->input->post('jenis_kelamin'),
-            'tanggal_lahir' => $this->input->post('tanggal_lahir'),
-            'tempat_lahir' => $this->input->post('tempat_lahir'),
-            'agama' => $this->input->post('agama'),
-            'hubungan_keluarga' => $this->input->post('hubungan_keluarga'),
-            'status_perkawinan' => $this->input->post('status_perkawinan'),
-            'pendidikan' => $this->input->post('pendidikan'),
-            'nama_ibu' => $this->input->post('nama_ibu'),
-            'nama_ayah' => $this->input->post('nama_ayah'),
-            'pekerjaan' => $this->input->post('pekerjaan'),
-            'alamat' => $this->input->post('alamat'),
-            'rt' => $this->input->post('rt'),
-            'rw' => $this->input->post('rw'),
-            'kelurahan' => $this->input->post('kelurahan'),
-            'kecamatan' => $this->input->post('kecamatan'),
-            'gaji' => $this->input->post('gaji'),
-            'ktp' => $this->input->post('ktp'),
+            'no_kk' => $no_kk,
+            'alamat' => $this->input->post('alamat', true),
+            'rt' => $this->input->post('rt', true),
+            'rw' => $this->input->post('rw', true),
+            'kelurahan' => $this->input->post('kelurahan', true),
+            'kecamatan' => $this->input->post('kecamatan', true),
         ];
 
         if ($_FILES['foto_rumah']['name']) {
-            $this->load->library('upload');
-            $data["foto_rumah"] = upload_file('foto_rumah');
+            $data['foto_rumah'] = upload_file('foto_rumah');
+        }
+        if ($_FILES['foto_sppt']['name']) {
+            $data['foto_sppt'] = upload_file('foto_sppt');
         }
 
-        $is_exist_nik = $this->kependudukan_model->is_exist_kependudukan("nik", $nik);
-        if ($is_exist_nik) {
-            set_alert("NIK '$nik' telah terpakai, Mohon inputkan nik baru.", 'danger');
-        } else {
-            $result = $this->kependudukan_model->create_kependudukan($data);
-
-            if ($result) {
-                set_alert('Data Kependudukan Berhasil di Tambahkan', 'success');
-            } else {
-                set_alert('Data Kependudukan Gagal di Tambahkan', 'danger');
-            }
-        }
-
-        redirect('kependudukan');
+        $this->base_model->update('keluarga', $data, $id_keluarga);
+        set_alert('Data Informasi Keluarga Berhasil di Perbarui', 'success');
+        redirect("kependudukan/kk/$no_kk");
     }
 
-    public function edit()
+    public function delete_keluarga($id_keluarga = null, $jenis_foto = null)
     {
-        $id_kependudukan =  $this->input->post('id_kependudukan');
-        $nik =  $this->input->post('nik');
-        $data = array(
-            'nik' =>  $nik,
-            'no_kk' =>  $this->input->post('no_kk'),
-            'nama' =>  $this->input->post('nama'),
-            'jenis_kelamin' =>  $this->input->post('jenis_kelamin'),
-            'tanggal_lahir' =>  $this->input->post('tanggal_lahir'),
-            'tempat_lahir' =>  $this->input->post('tempat_lahir'),
-            'agama' =>  $this->input->post('agama'),
-            'hubungan_keluarga' =>  $this->input->post('hubungan_keluarga'),
-            'status_perkawinan' =>  $this->input->post('status_perkawinan'),
-            'pendidikan' =>  $this->input->post('pendidikan'),
-            'nama_ibu' =>  $this->input->post('nama_ibu'),
-            'nama_ayah' =>  $this->input->post('nama_ayah'),
-            'pekerjaan' =>  $this->input->post('pekerjaan'),
-            'alamat' =>  $this->input->post('alamat'),
-            'rt' =>  $this->input->post('rt'),
-            'rw' =>  $this->input->post('rw'),
-            'kelurahan' =>  $this->input->post('kelurahan'),
-            'kecamatan' =>  $this->input->post('kecamatan'),
-            'gaji' =>  $this->input->post('gaji'),
-            'ktp' =>  $this->input->post('ktp'),
-        );
 
-        $is_exist_nik = $this->kependudukan_model->is_exist_kependudukan("nik", $nik);
-        $kependudukan = $this->kependudukan_model->get_kependudukan_by("id_kependudukan", $id_kependudukan);
+        if (is_null($id_keluarga) || is_null($jenis_foto)) redirect('kependudukan');
+        $keluarga = $this->base_model->get_one_data_by('keluarga', 'id_keluarga', $id_keluarga);
 
-        if ($is_exist_nik && $nik != $kependudukan->nik) {
-            set_alert("Nilai NIK tidak boleh sama dengan penduduk lain", 'danger');
-        } else {
-            if ($_FILES['foto_rumah']['name']) {
-                $foto_rumah = $kependudukan->foto_rumah;
-                $this->load->library('upload');
-                $data['foto_rumah'] = upload_file('foto_rumah');
-                if ($foto_rumah) {
-                    unlink("./files/img/$foto_rumah");
-                }
-            }
+        unlink("./files/img/" . $keluarga->$jenis_foto);
 
-            $result = $this->kependudukan_model->edit_kependudukan($id_kependudukan, $data);
-
-            if ($result) {
-                set_alert('Data Kependudukan Berhasil di Update.', 'success');
-            } else {
-                set_alert('Data Kependudukan Gagal di Update.', 'danger');
-            }
-        }
-
-        redirect('kependudukan');
+        $this->base_model->update('keluarga', [$jenis_foto => null], $id_keluarga);
+        set_alert('Foto berhasil dihapus', 'success');
+        redirect("kependudukan/kk/$keluarga->no_kk");
     }
 
-    public function delete($id_kependudukan)
+    public function edit_penduduk()
     {
-        $foto_rumah = $this->kependudukan_model->get_kependudukan_by("id_kependudukan", $id_kependudukan)->foto_rumah;
+        $id_kependudukan = $this->input->post('id_kependudukan', true);
 
-        if ($foto_rumah) {
-            unlink("./files/img/$foto_rumah");
+        $data = [
+            'nik' => $this->input->post('nik', true),
+            'nama' => $this->input->post('nama', true),
+            'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
+            'tanggal_lahir' => $this->input->post('tanggal_lahir', true),
+            'tempat_lahir' => $this->input->post('tempat_lahir', true),
+            'agama' => $this->input->post('agama', true),
+            'hubungan_keluarga' => $this->input->post('hubungan_keluarga', true),
+            'status_perkawinan' => $this->input->post('status_perkawinan', true),
+            'pendidikan' => $this->input->post('pendidikan', true),
+            'nama_ibu' => $this->input->post('nama_ibu', true),
+            'nama_ayah' => $this->input->post('nama_ayah', true),
+        ];
+
+
+        $this->base_model->update('kependudukan', $data, $id_kependudukan);
+        set_alert('Data Penduduk Berhasil di Perbarui', 'success');
+        $no_kk = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $id_kependudukan)->no_kk;
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function insert_aset()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+        $kategori = $this->input->post('kategori', true);
+
+        $data = [
+            'no_kk' => $no_kk,
+            'kategori' => $kategori,
+            'jenis' => $this->input->post('jenis', true),
+            'keterangan' => $this->input->post('keterangan', true),
+            'nilai' => $this->input->post('nilai', true),
+        ];
+
+        if ($kategori == 'aset tidak bergerak') {
+            $data['luas'] = $this->input->post('luas', true);
+            $data['kepemilikan'] = $this->input->post('kepemilikan', true);
+            $data['lama_sewa'] = $this->input->post('lama_sewa', true);
+            $data['url_maps'] = $this->input->post('url_maps', true);
         }
 
-        $result = $this->kependudukan_model->delete_kependudukan($id_kependudukan);
-        if ($result) {
-            set_alert('Data Kependudukan Berhasil di Hapus.', 'success');
-        } else {
-            set_alert('Data Kependudukan Gagal di Hapus.', 'danger');
+
+        $this->base_model->insert('aset', $data);
+        set_alert('Data Aset Berhasil di Tambahkan', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_aset()
+    {
+        $id_aset = $this->input->post('id_aset', true);
+        $no_kk = $this->input->post('no_kk', true);
+        $kategori = $this->input->post('kategori', true);
+
+        $data = [
+            'no_kk' => $no_kk,
+            'kategori' => $kategori,
+            'jenis' => $this->input->post('jenis', true),
+            'keterangan' => $this->input->post('keterangan', true),
+            'nilai' => $this->input->post('nilai', true),
+        ];
+
+        if ($kategori == 'aset tidak bergerak') {
+            $data['luas'] = $this->input->post('luas', true);
+            $data['kepemilikan'] = $this->input->post('kepemilikan', true);
+            $data['lama_sewa'] = $this->input->post('lama_sewa', true);
+            $data['url_maps'] = $this->input->post('url_maps', true);
         }
-        redirect('kependudukan');
+
+
+        $this->base_model->update('aset', $data, $id_aset);
+        set_alert('Data Aset Berhasil di Perbarui', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function delete_aset($id_aset = null)
+    {
+
+        if (is_null($id_aset)) redirect('kependudukan');
+        $no_kk = $this->base_model->get_one_data_by('aset', 'id_aset', $id_aset)->no_kk;
+        $this->base_model->delete('aset', $id_aset);
+        set_alert('Data Aset berhasil dihapus', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_pendapatan()
+    {
+        $id_kependudukan = $this->input->post('id_kependudukan', true);
+
+        $data = [
+            'pekerjaan' => $this->input->post('pekerjaan', true),
+            'pendapatan' => $this->input->post('pendapatan', true),
+        ];
+
+
+        $this->base_model->update('kependudukan', $data, $id_kependudukan);
+        set_alert('Data Pendapatan Penduduk Berhasil di Perbarui', 'success');
+        $no_kk = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $id_kependudukan)->no_kk;
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_kelas()
+    {
+        $id_kependudukan = $this->input->post('id_kependudukan');
+        $kelas = $this->input->post('kelas');
+        $this->base_model->update('kependudukan', ['kelas' => $kelas], $id_kependudukan);
+        $penduduk = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $id_kependudukan);
+        set_alert('Berhasil mengedit data kelas penduduk', 'success');
+        redirect("kependudukan/kk/$penduduk->no_kk");
+    }
+
+    public function edit_ktp()
+    {
+        $id_kependudukan = $this->input->post('id_kependudukan');
+        $status_ktp = $this->input->post('status_ktp');
+        $this->base_model->update('kependudukan', ['status_ktp' => $status_ktp], $id_kependudukan);
+        $penduduk = $this->base_model->get_one_data_by('kependudukan', 'id_kependudukan', $id_kependudukan);
+        set_alert('Berhasil mengedit status KTP penduduk', 'success');
+        redirect("kependudukan/kk/$penduduk->no_kk");
+    }
+
+    public function insert_bansos()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+
+        $data = [
+            'no_kk' => $no_kk,
+            'jenis' => $this->input->post('jenis', true),
+            'keterangan' => $this->input->post('keterangan', true),
+            'tanggal_penetapan' => $this->input->post('tanggal_penetapan', true),
+            'nilai' => $this->input->post('nilai', true),
+        ];
+
+
+        $this->base_model->insert('bansos', $data);
+        set_alert('Data Bantuan Sosial Berhasil di Tambahkan', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_bansos()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+        $id_bansos = $this->input->post('id_bansos', true);
+
+        $data = [
+            'jenis' => $this->input->post('jenis', true),
+            'keterangan' => $this->input->post('keterangan', true),
+            'tanggal_penetapan' => $this->input->post('tanggal_penetapan', true),
+            'nilai' => $this->input->post('nilai', true),
+        ];
+
+
+        $this->base_model->update('bansos', $data, $id_bansos);
+        set_alert('Data Bantuan Sosial Berhasil di Perbarui', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function delete_bansos($id_bansos = null)
+    {
+
+        if (is_null($id_bansos)) redirect('kependudukan');
+        $no_kk = $this->base_model->get_one_data_by('bansos', 'id_bansos', $id_bansos)->no_kk;
+        $this->base_model->delete('bansos', $id_bansos);
+        set_alert('Data Bantuan berhasil dihapus', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function insert_informasi_tambahan()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+
+        $data = [
+            'no_kk' => $no_kk,
+            'informasi' => $this->input->post('informasi', true),
+            'deskripsi' => $this->input->post('deskripsi', true),
+        ];
+
+
+        $this->base_model->insert('informasi_tambahan', $data);
+        set_alert('Data Informai Tambahan Berhasil di Tambahkan', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_informasi_tambahan()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+        $id_informasi_tambahan = $this->input->post('id_informasi_tambahan', true);
+
+        $data = [
+            'informasi' => $this->input->post('informasi', true),
+            'deskripsi' => $this->input->post('deskripsi', true),
+        ];
+
+
+        $this->base_model->update('informasi_tambahan', $data, $id_informasi_tambahan);
+        set_alert('Data Informasi Tambahan Berhasil di Perbarui', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function delete_informasi_tambahan($id_informasi_tambahan = null)
+    {
+
+        if (is_null($id_informasi_tambahan)) redirect('kependudukan');
+        $no_kk = $this->base_model->get_one_data_by('informasi_tambahan', 'id_informasi_tambahan', $id_informasi_tambahan)->no_kk;
+        $this->base_model->delete('informasi_tambahan', $id_informasi_tambahan);
+        set_alert('Data Informasi Tambahan berhasil dihapus', 'success');
+        redirect("kependudukan/kk/$no_kk");
     }
 }

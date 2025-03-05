@@ -3,6 +3,17 @@
 
 <head>
     <?php $this->view('templates/head'); ?>
+    <style>
+        #link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        #link:hover {
+            text-decoration: underline;
+            color: blue;
+        }
+    </style>
 </head>
 
 <body class="sb-nav-fixed">
@@ -23,7 +34,12 @@
                     <!-- End Alert -->
                     <h3 class="mt-4">Pendataan KTP Penduduk</h3>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Data Penduduk</li>
+                        <?php if (empty($filter)): ?>
+                            <li class="breadcrumb-item active">Semua Penduduk</li>
+                        <?php else: ?>
+                            <li class="breadcrumb-item"><a href="<?= base_url('ktp'); ?>">Semua Penduduk</a></li>
+                            <li class="breadcrumb-item active"><?= $filter == 1 ? 'Belum Diketahui' : ($filter == 2 ? 'Memiliki KTP' : 'Belum Memiliki KTP'); ?></li>
+                        <?php endif; ?>
                     </ol>
 
                     <div class="card mb-4 mx-0">
@@ -57,18 +73,19 @@
                                             <td>
                                                 <?php if ($item->status_ktp == 'memiliki KTP'): ?>
                                                     <i class="text-success bi bi-check-circle-fill"></i>
-                                                    <span>Memiliki KTP</span>
+                                                    <a id="link" href="<?= base_url('ktp?f=2'); ?>">Memiliki KTP</a>
                                                 <?php endif; ?>
                                                 <?php if ($item->status_ktp == 'belum diketahui' && convert_usia($item->tanggal_lahir) >= 17): ?>
-                                                    <span>Belum diketahui</span>
+                                                    <a id="link" href="<?= base_url('ktp?f=1'); ?>">Belum diketahui</a>
                                                 <?php endif; ?>
                                                 <?php if ($item->status_ktp == 'belum memiliki KTP'): ?>
                                                     <i class="text-danger bi bi-x-octagon-fill"></i>
-                                                    <span>belum memiliki KTP</span>
+                                                    <a id="link" href="<?= base_url('ktp?f=3'); ?>">belum memiliki KTP</a>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_kelas">
+                                                <?php $params = "[`$item->id_kependudukan`,`$item->status_ktp`]" ?>
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_ktp" onclick="setForm(<?= $params ?>);">
                                                     <i class="bi bi-gear"></i>
                                                 </button>
                                                 <a href="<?= base_url("kependudukan/kk/$item->no_kk") ?>" target="_blank" class="btn btn-sm btn-outline-success">
@@ -85,6 +102,41 @@
             </main>
         </div>
     </div>
+
+    <div class="modal fade" id="modal_ktp" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Kepemilikan KTP</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="<?= base_url('ktp/edit'); ?>" method="post">
+                    <div class="modal-body">
+                        <input name="id_kependudukan" id="id_kependudukan" hidden>
+                        <select class="form-select" name="status_ktp" id="status_ktp">
+                            <option value="belum diketahui">Belum diketahui</option>
+                            <option value="memiliki KTP">Memiliki KTP</option>
+                            <option value="belum memiliki KTP">Belum memiliki KTP</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const id_kependudukan = document.querySelector('#id_kependudukan');
+        const status_ktp = document.querySelector('#status_ktp');
+
+        const setForm = ([_id_kependudukan, _status_ktp]) => {
+            id_kependudukan.value = _id_kependudukan;
+            status_ktp.value = _status_ktp;
+        }
+    </script>
 
     <!-- Logout Modal -->
     <?php $this->view('templates/logout_modal'); ?>

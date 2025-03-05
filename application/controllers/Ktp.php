@@ -13,8 +13,24 @@ class Ktp extends CI_Controller
 
     public function index()
     {
-        $data['data_result'] = $this->ktp_model->get_all();
+        $filter = $this->input->get('f');
+
+        if (!empty($filter) && !preg_match('/\b(1|2|3)\b/', $filter)) {
+            redirect('ktp');
+        }
+
+        $data['filter'] = $filter;
+        $data['data_result'] = $this->ktp_model->get_all($filter);
         $data['title'] = 'Pendataan KTP';
         $this->load->view('ktp/index', $data);
+    }
+
+    public function edit()
+    {
+        $id_kependudukan = $this->input->post('id_kependudukan');
+        $status_ktp = $this->input->post('status_ktp');
+        $this->base_model->update('kependudukan', ['status_ktp' => $status_ktp], $id_kependudukan);
+        set_alert('Berhasil mengedit status KTP penduduk', 'success');
+        redirect('ktp');
     }
 }

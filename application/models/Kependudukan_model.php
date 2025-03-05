@@ -3,9 +3,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Kependudukan_model extends CI_Model
 {
-    function get_all_kependudukan(): array
+    function get_all_kependudukan($type = null, $value = null): array
     {
-        $query = "SELECT * FROM kependudukan WHERE kependudukan.hubungan_keluarga = 'kepala keluarga'";
+        $where = "";
+        if ($type) {
+            $where .= "AND keluarga.$type = '$value'";
+        }
+
+        $query = "SELECT kependudukan.* 
+        FROM kependudukan 
+        JOIN keluarga ON kependudukan.no_kk = keluarga.no_kk
+        WHERE kependudukan.hubungan_keluarga = 'kepala keluarga' $where
+        ORDER BY kependudukan.id_kependudukan";
         return $this->db->query($query)->result();
     }
 
@@ -30,6 +39,12 @@ class Kependudukan_model extends CI_Model
     function get_bansos_penduduk(string $no_kk): array
     {
         $query = "SELECT * FROM bansos WHERE bansos.no_kk = '$no_kk'";
+        return $this->db->query($query)->result();
+    }
+
+    function get_informasi_tambahan_penduduk(string $no_kk): array
+    {
+        $query = "SELECT * FROM informasi_tambahan WHERE informasi_tambahan.no_kk = '$no_kk'";
         return $this->db->query($query)->result();
     }
 
@@ -71,24 +86,13 @@ class Kependudukan_model extends CI_Model
         return $this->db->query($query)->row('jumlah');
     }
 
-
-    function get_kependudukan_rt_count($rt)
+    function get_kependudukan_rt_rw($type, $value)
     {
-
-        $query = "SELECT rt, COUNT(*) AS jumlah
-            FROM keluarga
-            WHERE keluarga.rt = '$rt'
-            GROUP BY rt";
-        return $this->db->query($query)->row('jumlah');
-    }
-
-    function get_kependudukan_rw_count($rw)
-    {
-        $query = "SELECT rw, COUNT(*) AS jumlah
-            FROM keluarga
-            WHERE keluarga.rw = '$rw'
-            GROUP BY rw";
-        return $this->db->query($query)->row('jumlah');
+        $query = "SELECT keluarga.$type, COUNT(*) AS total FROM kependudukan
+        JOIN keluarga ON kependudukan.no_kk = keluarga.no_kk
+        WHERE keluarga.$type = '$value'
+        GROUP BY '$type'";
+        return $this->db->query($query)->row('total');
     }
 
     function get_kependudukan_rt($rt)

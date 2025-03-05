@@ -33,7 +33,7 @@
                                 <div class="card-body text-capitalize">
                                     <div class="row">
                                         <div class="col">
-                                            <h6 class="my-1 fw-bolder text-center">INFORMASI UMUM</h6>
+                                            <h6 class="my-1 fw-bolder text-center">INFORMASI KELUARGA</h6>
                                             <hr>
                                         </div>
                                     </div>
@@ -44,16 +44,16 @@
                                                     <h6 class="mb-0">Nomor Kartu Keluarga</h6>
                                                 </div>
                                                 <div class="col-6 mb-0">
-                                                    <span><?= $no_kk; ?></span>
+                                                    <span><?= $keluarga->no_kk; ?></span>
                                                 </div>
                                             </div>
                                             <hr>
                                             <div class="row">
                                                 <div class="col-6 mb-0">
-                                                    <h6 class="mb-0">Alamat</h6>
+                                                    <h6 class="mb-0">Alamat Lengkap</h6>
                                                 </div>
                                                 <div class="col-6 mb-0">
-                                                    <?php $alamat = $keluarga->alamat . ", RT " . sprintf("%03d", $keluarga->rt) . " RW " . sprintf("%03d", $keluarga->rw) . " Desa " . $keluarga->kelurahan . " Kecamatan " . $keluarga->kecamatan . "Kabupaten Probolinggo"; ?>
+                                                    <?php $alamat = $keluarga->alamat . ", RT " .  $keluarga->rt . " RW " .  $keluarga->rw . " Desa " . $keluarga->kelurahan . " Kecamatan " . $keluarga->kecamatan . "Kabupaten Probolinggo"; ?>
                                                     <span><?= $alamat; ?></span>
                                                 </div>
                                             </div>
@@ -63,24 +63,15 @@
                                                     <h6 class="mb-0">Foto Rumah</h6>
                                                 </div>
                                                 <div class="col-6 mb-0">
-                                                    <?php if (is_null($keluarga->foto_rumah)): ?>
-                                                        <form action="<?= base_url('kependudukan/import') ?>" method="post" enctype="multipart/form-data">
-                                                            <div class="row">
-                                                                <div class="col-8">
-                                                                    <input type="file" class="form-control" name="import_file">
-                                                                </div>
-                                                                <div class="col-4">
-                                                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    <?php else: ?>
-                                                        <a href="<?= base_url("files/img/" . $penduduk[0]->foto_rumah); ?>" target="_blank">
-                                                            <img class="rounded shadow" src="<?= base_url("files/img/" . $penduduk[0]->foto_rumah); ?>" style="width: 50%;" />
+                                                    <?php if ($keluarga->foto_rumah): ?>
+                                                        <a href="<?= base_url("files/img/" . $keluarga->foto_rumah); ?>" target="_blank">
+                                                            <img class="rounded shadow" src="<?= base_url("files/img/$keluarga->foto_rumah"); ?>" style="width: 50%;" />
                                                         </a>
-                                                        <a href="<?= base_url("user/delete") ?>" type="button" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                        <a href="<?= base_url("kependudukan/delete_keluarga/$keluarga->id_keluarga/foto_rumah") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
+                                                    <?php else: ?>
+                                                        <span>---</span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -90,14 +81,22 @@
                                                     <h6 class="mb-0">Foto SPPT</h6>
                                                 </div>
                                                 <div class="col-6 mb-0">
-                                                    <a href="<?= base_url("files/img/sppt-1.jpg"); ?>" target="_blank">
-                                                        <img class="rounded shadow" src="<?= base_url("files/img/sppt-1.jpg"); ?>" style="width: 50%;" />
-                                                    </a>
-                                                    <a href="<?= base_url("user/delete") ?>" type="button" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
-                                                        <i class="bi bi-trash"></i>
-                                                    </a>
+                                                    <?php if ($keluarga->foto_sppt): ?>
+                                                        <a href="<?= base_url("files/img/$keluarga->foto_sppt"); ?>" target="_blank">
+                                                            <img class="rounded shadow" src="<?= base_url("files/img/$keluarga->foto_sppt"); ?>" style="width: 50%;" />
+                                                        </a>
+                                                        <a href="<?= base_url("kependudukan/delete_keluarga/$keluarga->id_keluarga/foto_sppt") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span>---</span>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
+                                            <?php $params_keluarga = "[`$keluarga->id_keluarga`,`$keluarga->no_kk`,`$keluarga->alamat`,`$keluarga->rt`,`$keluarga->rw`,`$keluarga->kelurahan`,`$keluarga->kecamatan`]" ?>
+                                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#modal_keluarga" onclick="set_form_keluarga(<?= $params_keluarga ?>);">
+                                                <i class="bi bi-gear"></i> Perbarui
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -143,9 +142,10 @@
                                                             <td><?= $item->status_perkawinan ?></td>
                                                             <td><?= $item->agama ?></td>
                                                             <td>
-                                                                <a href="<?= base_url("kependudukan/kk/$item->no_kk") ?>" class="btn btn-sm btn-outline-primary">
+                                                                <?php $params_penduduk = "[`$item->id_kependudukan`,`$item->nik`,`$item->nama`,`$item->jenis_kelamin`,`$item->tanggal_lahir`,`$item->tempat_lahir`,`$item->agama`,`$item->hubungan_keluarga`,`$item->status_perkawinan`,`$item->pendidikan`,`$item->nama_ibu`,`$item->nama_ayah`]" ?>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#modal_penduduk" onclick="set_form_penduduk(<?= $params_penduduk ?>);">
                                                                     <i class="bi bi-gear"></i>
-                                                                </a>
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                         <?php $no++ ?>
@@ -168,6 +168,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
+                                            <button type="button" class="my-2 btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_aset_bergerak" onclick="set_form_aset_bergerak('insert')">
+                                                <i class="bi bi-plus-circle"></i> Tambah Data
+                                            </button>
                                             <table id="" class="table  table-bordered text-capitalize" style="font-size: .9em;">
                                                 <thead>
                                                     <tr>
@@ -188,11 +191,17 @@
                                                             <td><?= $no ?></td>
                                                             <td><?= $item->jenis ?></td>
                                                             <td><?= $item->keterangan ?></td>
-                                                            <td><?= $item->nilai ?></td>
+                                                            <td>Rp <?= number_format($item->nilai, 0, ',', '.') ?></td>
                                                             <td>
-                                                                <a href="<?= base_url("kependudukan/kk") ?>" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="bi bi-gear"></i>
-                                                                </a>
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <?php $params_aset = "[`$item->id_aset`,`$item->jenis`,`$item->keterangan`,`$item->nilai`]" ?>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_aset_bergerak" onclick="set_form_aset_bergerak('edit',<?= $params_aset ?>);">
+                                                                        <i class="bi bi-gear"></i>
+                                                                    </button>
+                                                                    <a href="<?= base_url("kependudukan/delete_aset/$item->id_aset") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         <?php $no++ ?>
@@ -203,6 +212,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">
+                                            <button type="button" class="my-2 btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_aset_tidak_bergerak" onclick="set_form_aset_tidak_bergerak('insert')">
+                                                <i class="bi bi-plus-circle"></i> Tambah Data
+                                            </button>
                                             <table id="" class="table  table-bordered text-capitalize" style="font-size: .9em;">
                                                 <thead>
                                                     <tr>
@@ -213,7 +225,7 @@
                                                         <th>Jenis Aset</th>
                                                         <th>Keterangan</th>
                                                         <th>Nilai Aset</th>
-                                                        <th>Luas (Hektar)</th>
+                                                        <th>Luas</th>
                                                         <th>Kepemilikan</th>
                                                         <th>Lama Sewa</th>
                                                         <th>Aksi</th>
@@ -226,15 +238,21 @@
                                                             <td><?= $no ?></td>
                                                             <td><?= $item->jenis ?></td>
                                                             <td><?= $item->keterangan ?></td>
-                                                            <td><?= $item->nilai ?></td>
-                                                            <td><?= $item->luas ?></td>
+                                                            <td>Rp <?= number_format($item->nilai, 0, ',', '.') ?></td>
+                                                            <td class="text-lowercase"><?= $item->luas ?></td>
                                                             <td><?= $item->kepemilikan ?></td>
-                                                            <td><?= $item->lama_sewa ?></td>
+                                                            <td><?= empty($item->lama_sewa) ? '-' : $item->lama_sewa ?></td>
                                                             <td>
-                                                                <a href="https://www.google.com/maps?q=<?= "$item->latitude,$item->longitude " ?>&t=h&z=50" target="_blank" type="button" id="maps" class="btn-sm btn btn-success"><i class="bi bi-geo-alt-fill"></i> Lihat Lokasi</a>
-                                                                <a href="<?= base_url("kependudukan/kk") ?>" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="bi bi-gear"></i>
-                                                                </a>
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <?php $params_aset = "[`$item->id_aset`,`$item->jenis`,`$item->keterangan`,`$item->nilai`,`$item->luas`,`$item->kepemilikan`,`$item->lama_sewa`,`$item->url_maps`]" ?>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_aset_tidak_bergerak" onclick="set_form_aset_tidak_bergerak('edit',<?= $params_aset ?>);">
+                                                                        <i class="bi bi-gear"></i>
+                                                                    </button>
+                                                                    <a href="<?= base_url("kependudukan/delete_aset/$item->id_aset") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                    <a href="<?= $item->url_maps ?>" target="_blank" class="btn btn-success"><i class="bi bi-geo-alt-fill"></i> Lihat Lokasi</a>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         <?php $no++ ?>
@@ -247,7 +265,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="card mb-3">
+                            <div class="card mb-3 shadow-sm">
                                 <div class="card-body text-capitalize">
                                     <div class="row">
                                         <div class="col">
@@ -264,6 +282,7 @@
                                                         <th>Nama Lengkap</th>
                                                         <th>Pekerjaan</th>
                                                         <th>Pendapatan</th>
+                                                        <th>Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -273,13 +292,20 @@
                                                             <td><?= $no ?></td>
                                                             <td><?= $item->nama ?></td>
                                                             <td><?= $item->pekerjaan ?></td>
-                                                            <td><?= $item->pendapatan ?></td>
+                                                            <td>Rp <?= number_format($item->pendapatan, 0, ',', '.') ?></td>
+                                                            <td>
+                                                                <?php $params_pendapatan = "[`$item->id_kependudukan`,`$item->pekerjaan`,`$item->pendapatan`]" ?>
+                                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_pendapatan" onclick="set_form_pendapatan(<?= $params_pendapatan ?>);">
+                                                                    <i class="bi bi-gear"></i>
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                         <?php $no++ ?>
                                                     <?php endforeach; ?>
                                                 </tbody>
                                             </table>
-                                            <h6 class="mb-0 fw-semibold">Total Pendapatan : Rp <?= number_format('3000000', 0, ',', '.') ?></h6>
+                                            <?php $total_pendapatan = array_sum(array_column($penduduk, 'pendapatan')); ?>
+                                            <h6 class="mb-0 fw-semibold" style="color: red;">Total Pendapatan : Rp <?= number_format($total_pendapatan, 0, ',', '.') ?></h6>
                                         </div>
                                     </div>
                                 </div>
@@ -287,52 +313,6 @@
                         </div>
                         <div class="col-12">
                             <div class="card mb-3 shadow-sm">
-                                <div class="card-body text-capitalize">
-                                    <div class="row">
-                                        <div class="col">
-                                            <h6 class="my-1 fw-bolder text-center">INFORMASI BANTUAN SOSIAL</h6>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <table id="" class="table  table-bordered text-capitalize" style="font-size: .9em;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>No</th>
-                                                        <th>Jenis Bansos</th>
-                                                        <th>Keterangan</th>
-                                                        <th>Tanggal Penetapan</th>
-                                                        <th>Nilai</th>
-                                                        <th>Aksi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php $no = 1 ?>
-                                                    <?php foreach ($bansos as $item) : ?>
-                                                        <tr>
-                                                            <td><?= $no ?></td>
-                                                            <td><?= $item->jenis ?></td>
-                                                            <td><?= $item->keterangan ?></td>
-                                                            <td><?= $item->tanggal_penetapan ?></td>
-                                                            <td><?= $item->nilai ?></td>
-                                                            <td>
-                                                                <a href="<?= base_url("kependudukan/kk/$item->no_kk") ?>" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="bi bi-gear"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php $no++ ?>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card mb-3">
                                 <div class="card-body text-capitalize">
                                     <div class="row">
                                         <div class="col">
@@ -377,7 +357,8 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center ">
-                                                                <button type="button" <?= !$is_usia_sekolah ? 'disabled' : '' ?> class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_kelas">
+                                                                <?php $params_kelas = "[`$item->id_kependudukan`,`$item->kelas`]" ?>
+                                                                <button type="button" <?= !$is_usia_sekolah ? 'disabled' : '' ?> class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_kelas" onclick="set_form_kelas(<?= $params_kelas ?>);">
                                                                     <i class="bi bi-gear"></i>
                                                                 </button>
                                                             </td>
@@ -392,7 +373,7 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="card mb-3">
+                            <div class="card mb-3 shadow-sm">
                                 <div class="card-body text-capitalize">
                                     <div class="row">
                                         <div class="col">
@@ -440,9 +421,116 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center ">
-                                                                <button type="button" <?= $is_can_set ? '' : 'disabled' ?> class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_kelas">
+                                                                <?php $params_ktp = "[`$item->id_kependudukan`,`$item->status_ktp`]" ?>
+                                                                <button type="button" <?= $is_can_set ? '' : 'disabled' ?> class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_ktp" onclick="set_form_ktp(<?= $params_ktp ?>);">
                                                                     <i class="bi bi-gear"></i>
                                                                 </button>
+                                                            </td>
+                                                        </tr>
+                                                        <?php $no++ ?>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body text-capitalize">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h6 class="my-1 fw-bolder text-center">INFORMASI BANTUAN SOSIAL</h6>
+                                            <hr>
+                                            <button type="button" class="mb-2 btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_bansos" onclick="set_form_bansos('insert')">
+                                                <i class="bi bi-plus-circle"></i> Tambah Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <table id="" class="table table-bordered text-capitalize" style="font-size: .9em;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Jenis Bansos</th>
+                                                        <th>Keterangan</th>
+                                                        <th>Tanggal Penetapan</th>
+                                                        <th>Nilai</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $no = 1 ?>
+                                                    <?php foreach ($bansos as $item) : ?>
+                                                        <tr>
+                                                            <td><?= $no ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->jenis ?></td>
+                                                            <td><?= $item->keterangan ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->tanggal_penetapan ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->nilai ?></td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <?php $params_bansos = "[`$item->id_bansos`,`$item->jenis`,`$item->keterangan`,`$item->tanggal_penetapan`,`$item->nilai`]" ?>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_bansos" onclick="set_form_bansos('edit',<?= $params_bansos ?>);">
+                                                                        <i class="bi bi-gear"></i>
+                                                                    </button>
+                                                                    <a href="<?= base_url("kependudukan/delete_bansos/$item->id_bansos") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <?php $no++ ?>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body text-capitalize">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h6 class="my-1 fw-bolder text-center">INFORMASI TAMBAHAN</h6>
+                                            <hr>
+                                            <button type="button" class="mb-2 btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_informasi_tambahan" onclick="set_form_informasi_tambahan('insert')">
+                                                <i class="bi bi-plus-circle"></i> Tambah Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <table id="" class="table table-bordered text-capitalize" style="font-size: .9em;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Informasi Terkait</th>
+                                                        <th>Deskripsi</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $no = 1 ?>
+                                                    <?php foreach ($informasi_tambahan as $item) : ?>
+                                                        <tr>
+                                                            <td><?= $no ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->informasi ?></td>
+                                                            <td><?= $item->deskripsi ?></td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <?php $params_informasi_tambahan = "[`$item->id_informasi_tambahan`,`$item->informasi`,`$item->deskripsi`]" ?>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_informasi_tambahan" onclick="set_form_informasi_tambahan('edit',<?= $params_informasi_tambahan ?>);">
+                                                                        <i class="bi bi-gear"></i>
+                                                                    </button>
+                                                                    <a href="<?= base_url("kependudukan/delete_informasi_tambahan/$item->id_informasi_tambahan") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                         <?php $no++ ?>
@@ -460,49 +548,80 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal_kelas" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="modal_keluarga" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Set Kelas</h1>
+                    <h1 class="modal-title fs-5 text-capitalize">Form Informasi Keluarga</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Simpan</button>
-                </div>
+                <form id="modal-form" method="post" action="<?= base_url('kependudukan/edit_keluarga') ?>" enctype="multipart/form-data" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="id_keluarga" id="id_keluarga" hidden>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="no_kk" class="form-label">No Kartu Keluarga</label>
+                                <input type="number" name="no_kk" id="no_kk" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="alamat" class="form-label">Alamat</label>
+                                <input type="text" name="alamat" id="alamat" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="rt" class="form-label">RT</label>
+                                <input type="text" name="rt" id="rt" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="rw" class="form-label">RW</label>
+                                <input type="text" name="rw" id="rw" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="kelurahan" class="form-label">Kelurahan</label>
+                                <input type="text" name="kelurahan" id="kelurahan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="kecamatan" class="form-label">Kecamatan</label>
+                                <input type="text" name="kecamatan" id="kecamatan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="foto_rumah" class="form-label">Upload Foto Rumah</label>
+                                <input type="file" class="form-control" id="foto_rumah" name="foto_rumah" accept="image/*">
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="foto_sppt" class="form-label">Upload Foto SPPT</label>
+                                <input type="file" class="form-control" id="foto_sppt" name="foto_sppt" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal Form -->
-    <div class="modal fade" id="modal_form" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+    <div class="modal fade" id="modal_penduduk" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-capitalize" id="modal_form">Tambah Data Kependudukan</h1>
+                    <h1 class="modal-title fs-5 text-capitalize">Form Anggota Keluarga</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="modal-form" method="post" action="<?= base_url('kependudukan/create') ?>" enctype="multipart/form-data" autocomplete="off">
+                <form id="modal-form" method="post" action="<?= base_url('kependudukan/edit_penduduk') ?>" enctype="multipart/form-data" autocomplete="off">
                     <div class="modal-body">
                         <div class="row g-3">
-                            <input type="text" name="id_kependudukan" id="id_kependudukan" hidden>
-                            <div class="form-group col-12 col-md-2">
+                            <input name="id_kependudukan" id="id_kependudukan" hidden>
+                            <div class="form-group col-12 col-md-4">
                                 <label for="nik" class="form-label">NIK</label>
                                 <input type="text" name="nik" id="nik" class="form-control" required>
                             </div>
-                            <div class="form-group col-12 col-md-2">
-                                <label for="no_kk" class="form-label">No Kartu Keluarga</label>
-                                <input type="text" name="no_kk" id="no_kk" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12 col-md-4">
+                            <div class="form-group col-12 col-md-5">
                                 <label for="nama" class="form-label">Nama Lengkap</label>
                                 <input type="text" name="nama" id="nama" class="form-control" required>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-3">
                                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
                                 <select class="form-select" name="jenis_kelamin" id="jenis_kelamin" required>
                                     <option value="" selected>--</option>
@@ -510,15 +629,15 @@
                                     <option value="perempuan">Perempuan</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-4">
                                 <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                <input type="text" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required>
+                                <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-4">
                                 <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
                                 <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control" required>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-4">
                                 <label for="agama" class="form-label">Agama</label>
                                 <select class="form-select" name="agama" id="agama" required>
                                     <option value="" selected>--</option>
@@ -530,7 +649,7 @@
                                     <option value="khonghucu">Khonghucu</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-4">
                                 <label for="hubungan_keluarga" class="form-label">Hubungan Keluarga</label>
                                 <select class="form-select" name="hubungan_keluarga" id="hubungan_keluarga" required>
                                     <option value="" selected>--</option>
@@ -545,7 +664,7 @@
                                     <option value="lainnya">Lainnya</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-2">
+                            <div class="form-group col-12 col-md-4">
                                 <label for="status_perkawinan" class="form-label">Status Perkawinan</label>
                                 <select class="form-select" name="status_perkawinan" id="status_perkawinan" required>
                                     <option value="" selected>--</option>
@@ -556,248 +675,392 @@
                                 </select>
                             </div>
                             <div class="form-group col-12 col-md-4">
-                                <label for="pendidikan" class="form-label">Hubungan Keluarga</label>
+                                <label for="pendidikan" class="form-label">Pendidikan</label>
                                 <select class="form-select text-capitalize" name="pendidikan" id="pendidikan" required>
                                     <option value="" selected>--</option>
-                                    <option value="tidak/belum sekolah">tidak/belum sekolah</option>
-                                    <option value="belum tamat sd/sederajat">belum tamat sd/sederajat</option>
-                                    <option value="tamat sd/sederajat">tamat sd/sederajat</option>
-                                    <option value="sltp/sederajat">sltp/sederajat</option>
-                                    <option value="slta/sederajat">slta/sederajat</option>
-                                    <option value="diploma i/ii">diploma i/ii</option>
-                                    <option value="akademi/diploma 3/sarjana muda">akademi/diploma 3/sarjana muda</option>
-                                    <option value="diploma iv/strata i">diploma iv/strata i</option>
-                                    <option value="strata ii">strata ii</option>
-                                    <option value="strata iii">strata iii</option>
+                                    <option value="Tidak/Belum Sekolah">Tidak/Belum Sekolah</option>
+                                    <option value="Belum Tamat SD/Sederajat">Belum Tamat SD/Sederajat</option>
+                                    <option value="Tamat SD/Sederajat">Tamat SD/Sederajat</option>
+                                    <option value="SLTP/Sederajat">SLTP/Sederajat</option>
+                                    <option value="SLTA/Sederajat">SLTA/Sederajat</option>
+                                    <option value="Diploma I/II">Diploma I/II</option>
+                                    <option value="Akademi/Diploma 3/Sarjana Muda">Akademi/Diploma 3/Sarjana Muda</option>
+                                    <option value="Diploma IV/Strata I">Diploma IV/Strata I</option>
+                                    <option value="Strata II">Strata II</option>
+                                    <option value="Strata III">Strata III</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-6">
                                 <label for="nama_ibu" class="form-label">Nama Ibu</label>
                                 <input type="text" name="nama_ibu" id="nama_ibu" class="form-control" required>
                             </div>
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-6">
                                 <label for="nama_ayah" class="form-label">Nama Ayah</label>
                                 <input type="text" name="nama_ayah" id="nama_ayah" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12 col-md-2">
-                                <label for="pekerjaan" class="form-label">Pekerjaan</label>
-                                <input type="text" name="pekerjaan" id="pekerjaan" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12 col-md-2">
-                                <label for="alamat" class="form-label">Alamat</label>
-                                <input type="text" name="alamat" id="alamat" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12 col-md-1">
-                                <label for="rt" class="form-label">RT</label>
-                                <input type="text" name="rt" id="rt" class="form-control" required>
-                            </div>
-                            <div class="form-group col-12 col-md-1">
-                                <label for="rw" class="form-label">RW</label>
-                                <input type="text" name="rw" id="rw" class="form-control" required>
-                            </div>
-                            <div class="col-md-6 col-12">
-                                <div class="row">
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="kelurahan" class="form-label">Kelurahan</label>
-                                        <input type="text" name="kelurahan" id="kelurahan" class="form-control" required>
-                                    </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="kecamatan" class="form-label">Kecamatan</label>
-                                        <input type="text" name="kecamatan" id="kecamatan" class="form-control" required>
-                                    </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="gaji" class="form-label">Gaji Per Bulan</label>
-                                        <input type="text" name="gaji" id="gaji" class="form-control">
-                                    </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label for="ktp" class="form-label">Status KTP</label>
-                                        <select class="form-select text-capitalize" name="ktp" id="ktp">
-                                            <option value="belum diketahui" selected>Belum Diketahui</option>
-                                            <option value="memiliki KTP">Memiliki KTP</option>
-                                            <option value="belum memiliki KTP">Belum memiliki KTP</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group col-12 col-md-3">
-                                <label for="foto_rumah" class="form-label">Upload Foto Rumah (Maks 2mb)</label>
-                                <input type="file" class="form-control-file" id="foto_rumah" name="foto_rumah" accept="image/*" onchange="showPreview(event);">
-                            </div>
-                            <div class="form-group col-12 col-md-3">
-                                <img id="preview" class="img-fluid" style="max-height: 150px;">
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" id="btn-modal-submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- End Modal Form -->
 
-    <!-- Script Modal Form -->
+    <div class="modal fade" id="modal_aset_bergerak" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Aset Bergerak</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
+                            <input name="id_aset" id="id_aset" hidden>
+                            <input name="kategori" value="aset bergerak" hidden>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="jenis" class="form-label">Jenis Aset</label>
+                                <select class="form-select" name="jenis" id="jenis" required>
+                                    <option value="" selected>--</option>
+                                    <option value="kendaraan">Kendaraan</option>
+                                    <option value="perangkat elektronik">Prangkat Elektronik</option>
+                                    <option value="lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="keterangan" class="form-label">Keterangan</label>
+                                <input type="text" name="keterangan" id="keterangan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="nilai" class="form-label">Nilai Aset</label>
+                                <input type="number" name="nilai" id="nilai" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_aset_tidak_bergerak" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Aset Tidak Bergerak</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
+                            <input name="id_aset" id="id_aset" hidden>
+                            <input name="kategori" value="aset tidak bergerak" hidden>
+                            <div class="form-group col-12 col-md-4">
+                                <label for="jenis" class="form-label">Jenis Aset</label>
+                                <select class="form-select" name="jenis" id="jenis" required>
+                                    <option value="" selected>--</option>
+                                    <option value="tanah">Tanah</option>
+                                    <option value="bangunan">Bangunan</option>
+                                    <option value="lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12 col-md-8">
+                                <label for="keterangan" class="form-label">Keterangan</label>
+                                <input type="text" name="keterangan" id="keterangan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-3">
+                                <label for="nilai" class="form-label">Nilai Aset</label>
+                                <input type="number" name="nilai" id="nilai" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-3">
+                                <label for="luas" class="form-label">Luas</label>
+                                <input type="text" name="luas" id="luas" class="form-control" required placeholder="Beri nilai Satuan (m2) / (ha)">
+                            </div>
+                            <div class="form-group col-12 col-md-3">
+                                <label for="kepemilikan" class="form-label">Kepemilikan</label>
+                                <select class="form-select" name="kepemilikan" id="kepemilikan" required>
+                                    <option value="" selected>--</option>
+                                    <option value="milik pribadi">Milik Pribadi</option>
+                                    <option value="sewa">Sewa</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12 col-md-3">
+                                <label for="lama_sewa" class="form-label">Lama Sewa</label>
+                                <input type="text" name="lama_sewa" id="lama_sewa" class="form-control" placeholder="-">
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="url_maps" class="form-label">URL Maps</label>
+                                <input type="text" name="url_maps" id="url_maps" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_pendapatan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Pendapatan Anggota Keluarga</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="<?= base_url('kependudukan/edit_pendapatan'); ?>" method="post">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="id_kependudukan" id="id_kependudukan" hidden>
+                            <div class="form-group col-12">
+                                <label for="pekerjaan" class="form-label">Pekerjaan</label>
+                                <input type="text" name="pekerjaan" id="pekerjaan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="pendapatan" class="form-label">Nominal Pendapatan</label>
+                                <input type="number" name="pendapatan" id="pendapatan" class="form-control" required>
+                                <div class="form-text">Beri nilai 0 bila tidak memiliki pendapatan.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_kelas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Set Kelas</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="<?= base_url('kependudukan/edit_kelas'); ?>" method="post">
+                    <div class="modal-body">
+                        <input name="id_kependudukan" id="id_kependudukan" hidden>
+                        <label for="kelas" class="form-label">Pilih Kelas</label>
+                        <select class="form-select" name="kelas" id="kelas" required>
+                            <option selected value="">--</option>
+                            <option value="1">Kelas 1 SD/Sederajat</option>
+                            <option value="2">Kelas 2 SD/Sederajat</option>
+                            <option value="3">Kelas 3 SD/Sederajat</option>
+                            <option value="4">Kelas 4 SD/Sederajat</option>
+                            <option value="5">Kelas 5 SD/Sederajat</option>
+                            <option value="6">Kelas 6 SD/Sederajat</option>
+                            <option value="7">Kelas 7 SMP/Sederajat</option>
+                            <option value="8">Kelas 8 SMP/Sederajat</option>
+                            <option value="9">Kelas 9 SMP/Sederajat</option>
+                            <option value="10">Kelas 10 SMA/Sederajat</option>
+                            <option value="11">Kelas 11 SMA/Sederajat</option>
+                            <option value="12">Kelas 12 SMA/Sederajat</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_ktp" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Kepemilikan KTP</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="<?= base_url('kependudukan/edit_ktp'); ?>" method="post">
+                    <div class="modal-body">
+                        <input name="id_kependudukan" id="id_kependudukan" hidden>
+                        <select class="form-select" name="status_ktp" id="status_ktp">
+                            <option value="belum diketahui">Belum diketahui</option>
+                            <option value="memiliki KTP">Memiliki KTP</option>
+                            <option value="belum memiliki KTP">Belum memiliki KTP</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_bansos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Bantuan Sosial</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
+                            <input name="id_bansos" id="id_bansos" hidden>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="jenis" class="form-label">Jenis Bantuan</label>
+                                <input type="text" name="jenis" id="jenis" class="form-control" required placeholder="PKH, BPNT, Dsb..">
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="keterangan" class="form-label">Keterangan</label>
+                                <input type="text" name="keterangan" id="keterangan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="tanggal_penetapan" class="form-label">Tanggal Penetapan</label>
+                                <input type="date" name="tanggal_penetapan" id="tanggal_penetapan" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="nilai" class="form-label">Nilai</label>
+                                <input type="text" name="nilai" id="nilai" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_informasi_tambahan" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Informasi Tambahan</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
+                            <input name="id_informasi_tambahan" id="id_informasi_tambahan" hidden>
+                            <div class="form-group col-12">
+                                <label for="informasi" class="form-label">Informasi Terkait</label>
+                                <input type="text" name="informasi" id="informasi" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="deskripsi" class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi" id="deskripsi" rows="4" class="form-control" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const modalTitle = document.querySelector('.modal-title')
-        const modalForm = document.querySelector('#modal-form')
-        const btnModalSubmit = document.querySelector('#btn-modal-submit')
-        const id_kependudukan = document.querySelector('#id_kependudukan');
-        const nik = document.querySelector('#nik');
-        const no_kk = document.querySelector('#no_kk');
-        const nama = document.querySelector('#nama');
-        const jenis_kelamin = document.querySelector('#jenis_kelamin');
-        const tanggal_lahir = document.querySelector('#tanggal_lahir');
-        const tempat_lahir = document.querySelector('#tempat_lahir');
-        const agama = document.querySelector('#agama');
-        const hubungan_keluarga = document.querySelector('#hubungan_keluarga');
-        const status_perkawinan = document.querySelector('#status_perkawinan');
-        const pendidikan = document.querySelector('#pendidikan');
-        const nama_ibu = document.querySelector('#nama_ibu');
-        const nama_ayah = document.querySelector('#nama_ayah');
-        const pekerjaan = document.querySelector('#pekerjaan');
-        const alamat = document.querySelector('#alamat');
-        const rt = document.querySelector('#rt');
-        const rw = document.querySelector('#rw');
-        const kelurahan = document.querySelector('#kelurahan');
-        const kecamatan = document.querySelector('#kecamatan');
-        const gaji = document.querySelector('#gaji');
-        const ktp = document.querySelector('#ktp');
-        const foto_rumah = document.querySelector('#foto_rumah');
-        const foto_rumah_preview = document.querySelector('#preview');
+        const set_form_keluarga = (data) => {
+            const modal_keluarga = document.querySelector('#modal_keluarga');
+            const fields = ['id_keluarga', 'no_kk', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan'];
 
-        const clearForm = () => {
-            btnModalSubmit.removeAttribute('hidden')
-            nik.value = ''
-            no_kk.value = ''
-            nama.value = ''
-            jenis_kelamin.value = ''
-            tanggal_lahir.value = ''
-            tempat_lahir.value = ''
-            agama.value = ''
-            hubungan_keluarga.value = ''
-            status_perkawinan.value = ''
-            pendidikan.value = ''
-            nama_ibu.value = ''
-            nama_ayah.value = ''
-            pekerjaan.value = ''
-            alamat.value = ''
-            rt.value = ''
-            rw.value = ''
-            kelurahan.value = ''
-            kecamatan.value = ''
-            gaji.value = ''
-            ktp.value = ''
-
-            nik.removeAttribute('disabled')
-            no_kk.removeAttribute('disabled')
-            nama.removeAttribute('disabled')
-            jenis_kelamin.removeAttribute('disabled')
-            tanggal_lahir.removeAttribute('disabled')
-            tempat_lahir.removeAttribute('disabled')
-            agama.removeAttribute('disabled')
-            hubungan_keluarga.removeAttribute('disabled')
-            status_perkawinan.removeAttribute('disabled')
-            pendidikan.removeAttribute('disabled')
-            nama_ibu.removeAttribute('disabled')
-            nama_ayah.removeAttribute('disabled')
-            pekerjaan.removeAttribute('disabled')
-            alamat.removeAttribute('disabled')
-            rt.removeAttribute('disabled')
-            rw.removeAttribute('disabled')
-            kelurahan.removeAttribute('disabled')
-            kecamatan.removeAttribute('disabled')
-            gaji.removeAttribute('disabled')
-            ktp.removeAttribute('disabled')
-            foto_rumah.removeAttribute('disabled')
-            foto_rumah_preview.removeAttribute('src')
-            foto_rumah_preview.removeAttribute('alt')
+            fields.forEach((e, i) => {
+                const element = modal_keluarga.querySelector(`#${e}`);
+                element.value = data[i];
+            })
         }
 
-        const setForm = (title, data, id = null) => {
-            clearForm()
-            modalTitle.innerHTML = `${title} Data Kependudukan`
+        const set_form_penduduk = (data) => {
+            const modal_penduduk = document.querySelector('#modal_penduduk');
+            const fields = ['id_kependudukan', 'nik', 'nama', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'agama', 'hubungan_keluarga', 'status_perkawinan', 'pendidikan', 'nama_ibu', 'nama_ayah'];
 
-            if (title === 'tambah') {
-                // ADD
-                modalForm.setAttribute('action', '<?= base_url('kependudukan/create') ?>')
-                return
-            }
-
-            const kependudukan = data.split(',');
-            nik.value = kependudukan[0]
-            no_kk.value = kependudukan[1]
-            nama.value = kependudukan[2]
-            jenis_kelamin.value = kependudukan[3]
-            tanggal_lahir.value = kependudukan[4]
-            tempat_lahir.value = kependudukan[5]
-            agama.value = kependudukan[6]
-            hubungan_keluarga.value = kependudukan[7]
-            status_perkawinan.value = kependudukan[8]
-            pendidikan.value = kependudukan[9]
-            nama_ibu.value = kependudukan[10]
-            nama_ayah.value = kependudukan[11]
-            pekerjaan.value = kependudukan[12]
-            alamat.value = kependudukan[13]
-            rt.value = kependudukan[14]
-            rw.value = kependudukan[15]
-            kelurahan.value = kependudukan[16]
-            kecamatan.value = kependudukan[17]
-            gaji.value = kependudukan[18]
-            ktp.value = kependudukan[19]
-            if (kependudukan[20]) {
-                foto_rumah_preview.setAttribute('src', `<?= base_url('files/img/'); ?>${kependudukan[20]}`)
-            } else {
-                console.log(1);
-                foto_rumah_preview.setAttribute('src', '')
-                foto_rumah_preview.setAttribute('alt', 'Belum Ada Foto')
-            }
-
-
-            if (title === 'detail') {
-                // DETAIL
-                btnModalSubmit.setAttribute('hidden', '')
-                nik.setAttribute('disabled', '')
-                no_kk.setAttribute('disabled', '')
-                nama.setAttribute('disabled', '')
-                jenis_kelamin.setAttribute('disabled', '')
-                tanggal_lahir.setAttribute('disabled', '')
-                tempat_lahir.setAttribute('disabled', '')
-                agama.setAttribute('disabled', '')
-                hubungan_keluarga.setAttribute('disabled', '')
-                status_perkawinan.setAttribute('disabled', '')
-                pendidikan.setAttribute('disabled', '')
-                nama_ibu.setAttribute('disabled', '')
-                nama_ayah.setAttribute('disabled', '')
-                pekerjaan.setAttribute('disabled', '')
-                alamat.setAttribute('disabled', '')
-                rt.setAttribute('disabled', '')
-                rw.setAttribute('disabled', '')
-                kelurahan.setAttribute('disabled', '')
-                kecamatan.setAttribute('disabled', '')
-                gaji.setAttribute('disabled', '')
-                ktp.setAttribute('disabled', '')
-                foto_rumah.setAttribute('disabled', '')
-                return
-            }
-
-            if (title === 'edit') {
-                // EDIT
-                modalForm.setAttribute('action', '<?= base_url('kependudukan/edit') ?>')
-                id_kependudukan.value = id
-                return
-            }
+            fields.forEach((e, i) => {
+                const element = modal_penduduk.querySelector(`#${e}`);
+                element.value = data[i];
+            })
         }
 
-        const showPreview = (event) => {
-            if (event.target.files.length > 0) {
-                var src = URL.createObjectURL(event.target.files[0]);
-                foto_rumah_preview.setAttribute('src', src)
-            }
+        const set_form_aset_bergerak = (title, data) => {
+            const modal_aset_bergerak = document.querySelector('#modal_aset_bergerak');
+            const form = modal_aset_bergerak.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_aset`);
+            const fields = ['id_aset', 'jenis', 'keterangan', 'nilai'];
+            fields.forEach((e, i) => {
+                const element = modal_aset_bergerak.querySelector(`#${e}`);
+                element.value = title == 'insert' ? '' : data[i];
+            })
+        }
+
+        const set_form_aset_tidak_bergerak = (title, data) => {
+            const modal_aset_tidak_bergerak = document.querySelector('#modal_aset_tidak_bergerak');
+            const form = modal_aset_tidak_bergerak.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_aset`);
+            const fields = ['id_aset', 'jenis', 'keterangan', 'nilai', 'luas', 'kepemilikan', 'lama_sewa', 'url_maps'];
+            fields.forEach((e, i) => {
+                const element = modal_aset_tidak_bergerak.querySelector(`#${e}`);
+                element.value = title == 'insert' ? '' : data[i];
+            })
+        }
+
+        const set_form_pendapatan = (data) => {
+            const modal_pendapatan = document.querySelector('#modal_pendapatan');
+            const fields = ['id_kependudukan', 'pekerjaan', 'pendapatan'];
+
+            fields.forEach((e, i) => {
+                const element = modal_pendapatan.querySelector(`#${e}`);
+                element.value = data[i];
+            })
+        }
+
+        const set_form_kelas = (data) => {
+            const modal_kelas = document.querySelector('#modal_kelas');
+            const fields = ['id_kependudukan', 'kelas'];
+            fields.forEach((e, i) => {
+                const element = modal_kelas.querySelector(`#${e}`);
+                element.value = data[i];
+            })
+        }
+
+        const set_form_ktp = ([_id_kependudukan, _status_ktp]) => {
+            const modal_ktp = document.querySelector('#modal_ktp');
+            const id_kependudukan = modal_ktp.querySelector('#id_kependudukan');
+            const status_ktp = modal_ktp.querySelector('#status_ktp');
+            id_kependudukan.value = _id_kependudukan;
+            status_ktp.value = _status_ktp;
+        }
+
+        const set_form_bansos = (title, data) => {
+            const modal_bansos = document.querySelector('#modal_bansos');
+            const form = modal_bansos.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_bansos`);
+            const fields = ['id_bansos', 'jenis', 'keterangan', 'tanggal_penetapan', 'nilai'];
+            fields.forEach((e, i) => {
+                const element = modal_bansos.querySelector(`#${e}`);
+                element.value = title == 'insert' ? '' : data[i];
+            })
+        }
+
+        const set_form_informasi_tambahan = (title, data) => {
+            const modal_informasi_tambahan = document.querySelector('#modal_informasi_tambahan');
+            const form = modal_informasi_tambahan.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_informasi_tambahan`);
+            const fields = ['id_informasi_tambahan', 'informasi', 'deskripsi'];
+            fields.forEach((e, i) => {
+                const element = modal_informasi_tambahan.querySelector(`#${e}`);
+                element.value = title == 'insert' ? '' : data[i];
+            })
         }
     </script>
-    <!-- End Script Modal Form -->
 
     <!-- Logout Modal -->
     <?php $this->view('templates/logout_modal'); ?>

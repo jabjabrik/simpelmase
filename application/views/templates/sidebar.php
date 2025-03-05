@@ -64,12 +64,6 @@
                     SK. Kehilangan
                 </a>
                 <div class="sb-sidenav-menu-heading">Akun</div>
-                <a class="nav-link <?= $title == 'Change Password' ? 'active' : '' ?>" href="<?= base_url('account/changepassword') ?>">
-                    <div class="sb-nav-link-icon">
-                        <i class="bi bi-person-lock"></i>
-                    </div>
-                    Ubah Password
-                </a>
                 <a class="nav-link" data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;">
                     <div class="sb-nav-link-icon">
                         <i class="bi bi-box-arrow-right"></i>

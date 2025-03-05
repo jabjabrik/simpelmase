@@ -133,7 +133,6 @@ function upload_file($file_upload)
     $config['upload_path'] = "./files/img/";
     $config['file_name'] = "$file_upload-$id.$image_type";
     $config['allowed_types'] = '*';
-    $config['max_size'] = 2048;
 
     $CI->upload->initialize($config);
     if (!$CI->upload->do_upload($file_upload)) {
