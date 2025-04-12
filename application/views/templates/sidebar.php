@@ -63,7 +63,43 @@
                     </div>
                     SK. Kehilangan
                 </a>
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    SK. Beda Identitas
+                </a>
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    SK. Kepemilikan
+                </a>
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    SK. Menikah
+                </a>
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    SK. Penghasilan
+                </a>
+                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    SK. Harga Tanah
+                </a>
                 <div class="sb-sidenav-menu-heading">Akun</div>
+                <a class="nav-link <?= $title == 'Change Password' ? 'active' : '' ?>" href="<?= base_url('account/changepassword') ?>">
+                    <div class="sb-nav-link-icon">
+                        <i class="bi bi-person-lock"></i>
+                    </div>
+                    Ubah Password
+                </a>
                 <a class="nav-link" data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;">
                     <div class="sb-nav-link-icon">
                         <i class="bi bi-box-arrow-right"></i>
