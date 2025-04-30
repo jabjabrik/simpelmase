@@ -10,13 +10,15 @@
                         </div>
                         Dashboard
                     </a>
-                    <div class="sb-sidenav-menu-heading">User</div>
-                    <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
-                        <div class="sb-nav-link-icon">
-                            <i class="bi bi-person-circle"></i>
-                        </div>
-                        Kelola User
-                    </a>
+                    <?php if ($this->session->userdata('role') == 'sekretaris desa') : ?>
+                        <div class="sb-sidenav-menu-heading">User</div>
+                        <a class="nav-link <?= $title == 'User' ? 'active' : '' ?>" href="<?= base_url('user') ?>">
+                            <div class="sb-nav-link-icon">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            Kelola User
+                        </a>
+                    <?php endif ?>
                     <div class="sb-sidenav-menu-heading">Kependudukan</div>
                     <a class="nav-link <?= $title == 'Kependudukan' ? 'active' : '' ?>" href="<?= base_url('kependudukan') ?>">
                         <div class="sb-nav-link-icon">
@@ -63,7 +65,7 @@
                     </div>
                     SK. Kehilangan
                 </a>
-                <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
+                <!-- <a class="nav-link <?= $title == 'SK Kehilangan' ? 'active' : '' ?>" href="<?= base_url('surat/sk_kehilangan') ?>">
                     <div class="sb-nav-link-icon">
                         <i class="bi bi-envelope"></i>
                     </div>
@@ -92,7 +94,7 @@
                         <i class="bi bi-envelope"></i>
                     </div>
                     SK. Harga Tanah
-                </a>
+                </a> -->
                 <div class="sb-sidenav-menu-heading">Akun</div>
                 <a class="nav-link <?= $title == 'Change Password' ? 'active' : '' ?>" href="<?= base_url('account/changepassword') ?>">
                     <div class="sb-nav-link-icon">
