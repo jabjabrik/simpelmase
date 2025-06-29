@@ -65,6 +65,8 @@ class Kependudukan extends CI_Controller
         $data['aset_tidak_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset tidak bergerak');
         $data['bansos'] = $this->kependudukan_model->get_bansos_penduduk($no_kk);
         $data['informasi_tambahan'] = $this->kependudukan_model->get_informasi_tambahan_penduduk($no_kk);
+        $data['no_kk'] = $no_kk;
+
         $this->load->view('kependudukan/penduduk', $data);
     }
 
@@ -317,5 +319,22 @@ class Kependudukan extends CI_Controller
         $this->base_model->delete('informasi_tambahan', $id_informasi_tambahan);
         set_alert('Data Informasi Tambahan berhasil dihapus', 'success');
         redirect("kependudukan/kk/$no_kk");
+    }
+
+
+    public function report($no_kk = null)
+    {
+        if (is_null($no_kk)) redirect('kependudukan');
+        $penduduk = $this->base_model->get_one_data_by('kependudukan', 'no_kk', $no_kk);
+        if (is_null($penduduk)) redirect('kependudukan');
+
+        $data['title'] = 'Kependudukan';
+        $data['penduduk'] = $this->kependudukan_model->get_penduduk($no_kk);
+        $data['keluarga'] = $this->kependudukan_model->get_keluarga($no_kk);
+        $data['aset_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset bergerak');
+        $data['aset_tidak_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset tidak bergerak');
+        $data['bansos'] = $this->kependudukan_model->get_bansos_penduduk($no_kk);
+        $data['informasi_tambahan'] = $this->kependudukan_model->get_informasi_tambahan_penduduk($no_kk);
+        $this->load->view('kependudukan/report', $data);
     }
 }

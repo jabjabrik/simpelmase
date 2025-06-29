@@ -26,6 +26,9 @@
                         <li class="breadcrumb-item"><a href="<?= base_url('kependudukan'); ?>">Data Penduduk</a></li>
                         <li class="breadcrumb-item active">Data Keluarga</li>
                     </ol>
+                    <a href="<?= base_url("kependudukan/report/$no_kk"); ?>" class="btn btn-sm btn-success" target="_blank">
+                        <i class="bi bi-printer"></i> Report
+                    </a>
 
                     <div class="row g-4">
                         <div class="col-12">
