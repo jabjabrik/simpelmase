@@ -42,11 +42,19 @@ class Kependudukan_model extends CI_Model
         return $this->db->query($query)->result();
     }
 
+    function get_disabilitas_penduduk(string $no_kk): array
+    {
+        $query = "SELECT * FROM disabilitas WHERE disabilitas.no_kk = '$no_kk'";
+        return $this->db->query($query)->result();
+    }
+
     function get_informasi_tambahan_penduduk(string $no_kk): array
     {
         $query = "SELECT * FROM informasi_tambahan WHERE informasi_tambahan.no_kk = '$no_kk'";
         return $this->db->query($query)->result();
     }
+
+
 
 
 

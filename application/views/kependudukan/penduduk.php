@@ -226,6 +226,7 @@
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Jenis Aset</th>
+                                                        <th>NOP</th>
                                                         <th>Keterangan</th>
                                                         <th>Nilai Aset</th>
                                                         <th>Luas</th>
@@ -240,6 +241,7 @@
                                                         <tr>
                                                             <td><?= $no ?></td>
                                                             <td><?= $item->jenis ?></td>
+                                                            <td><?= $item->nop ?? '-' ?></td>
                                                             <td><?= $item->keterangan ?></td>
                                                             <td>Rp <?= number_format($item->nilai, 0, ',', '.') ?></td>
                                                             <td class="text-lowercase"><?= $item->luas ?></td>
@@ -247,7 +249,7 @@
                                                             <td><?= empty($item->lama_sewa) ? '-' : $item->lama_sewa ?></td>
                                                             <td>
                                                                 <div class="btn-group btn-group-sm" role="group">
-                                                                    <?php $params_aset = "[`$item->id_aset`,`$item->jenis`,`$item->keterangan`,`$item->nilai`,`$item->luas`,`$item->kepemilikan`,`$item->lama_sewa`,`$item->url_maps`]" ?>
+                                                                    <?php $params_aset = "[`$item->id_aset`,`$item->jenis`,`$item->nop`,`$item->keterangan`,`$item->nilai`,`$item->luas`,`$item->kepemilikan`,`$item->lama_sewa`,`$item->url_maps`]" ?>
                                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_aset_tidak_bergerak" onclick="set_form_aset_tidak_bergerak('edit',<?= $params_aset ?>);">
                                                                         <i class="bi bi-gear"></i>
                                                                     </button>
@@ -457,6 +459,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
+                                                        <th>Nama Penduduk</th>
                                                         <th>Jenis Bansos</th>
                                                         <th>Keterangan</th>
                                                         <th>Tanggal Penetapan</th>
@@ -469,17 +472,69 @@
                                                     <?php foreach ($bansos as $item) : ?>
                                                         <tr>
                                                             <td><?= $no ?></td>
-                                                            <td style="white-space: nowrap;"><?= $item->jenis ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->nama_penduduk ?></td>
+                                                            <td><?= $item->jenis ?></td>
                                                             <td><?= $item->keterangan ?></td>
-                                                            <td style="white-space: nowrap;"><?= $item->tanggal_penetapan ?></td>
+                                                            <td style="white-space: nowrap;"><?= date('d-m-Y', strtotime($item->tanggal_penetapan)) ?></td>
                                                             <td style="white-space: nowrap;"><?= $item->nilai ?></td>
                                                             <td>
                                                                 <div class="btn-group btn-group-sm" role="group">
-                                                                    <?php $params_bansos = "[`$item->id_bansos`,`$item->jenis`,`$item->keterangan`,`$item->tanggal_penetapan`,`$item->nilai`]" ?>
+                                                                    <?php $params_bansos = "[`$item->id_bansos`,`$item->nama_penduduk`,`$item->jenis`,`$item->keterangan`,`$item->tanggal_penetapan`,`$item->nilai`]" ?>
                                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_bansos" onclick="set_form_bansos('edit',<?= $params_bansos ?>);">
                                                                         <i class="bi bi-gear"></i>
                                                                     </button>
                                                                     <a href="<?= base_url("kependudukan/delete_bansos/$item->id_bansos") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <?php $no++ ?>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body text-capitalize">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h6 class="my-1 fw-bolder text-center">PENDUDUK DISABILITAS</h6>
+                                            <hr>
+                                            <button type="button" class="mb-2 btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_disabilitas" onclick="set_form_disabilitas('insert')">
+                                                <i class="bi bi-plus-circle"></i> Tambah Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <table id="" class="table table-bordered text-capitalize" style="font-size: .9em;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>nama Penduduk</th>
+                                                        <th>Jenis Disabilitas</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $no = 1 ?>
+                                                    <?php foreach ($disabilitas as $item) : ?>
+                                                        <tr>
+                                                            <td><?= $no ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->nama_penduduk ?></td>
+                                                            <td style="white-space: nowrap;"><?= $item->jenis_disabilitas ?></td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-sm" role="group">
+                                                                    <?php $params_disabilitas = "[`$item->id_disabilitas`,`$item->nama_penduduk`,`$item->jenis_disabilitas`]" ?>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_disabilitas" onclick="set_form_disabilitas('edit',<?= $params_disabilitas ?>);">
+                                                                        <i class="bi bi-gear"></i>
+                                                                    </button>
+                                                                    <a href="<?= base_url("kependudukan/delete_disabilitas/$item->id_disabilitas") ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data?');">
                                                                         <i class="bi bi-trash"></i>
                                                                     </a>
                                                                 </div>
@@ -766,7 +821,7 @@
                             <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
                             <input name="id_aset" id="id_aset" hidden>
                             <input name="kategori" value="aset tidak bergerak" hidden>
-                            <div class="form-group col-12 col-md-4">
+                            <div class="form-group col-12 col-md-3">
                                 <label for="jenis" class="form-label">Jenis Aset</label>
                                 <select class="form-select" name="jenis" id="jenis" required>
                                     <option value="" selected>--</option>
@@ -775,7 +830,11 @@
                                     <option value="lainnya">Lainnya</option>
                                 </select>
                             </div>
-                            <div class="form-group col-12 col-md-8">
+                            <div class="form-group col-12 col-md-5">
+                                <label for="nop" class="form-label">NOP</label>
+                                <input type="text" name="nop" id="nop" class="form-control" required>
+                            </div>
+                            <div class="form-group col-12 col-md-4">
                                 <label for="keterangan" class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" id="keterangan" class="form-control" required>
                             </div>
@@ -918,6 +977,14 @@
                         <div class="row g-3">
                             <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
                             <input name="id_bansos" id="id_bansos" hidden>
+                            <div class="form-group col-12">
+                                <select class="form-select text-capitalize" name="nama_penduduk" id="nama_penduduk">
+                                    <option value="">-</option>
+                                    <?php foreach ($penduduk as $item) : ?>
+                                        <option value="<?= $item->nama ?>"><?= $item->nama ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                             <div class="form-group col-12 col-md-6">
                                 <label for="jenis" class="form-label">Jenis Bantuan</label>
                                 <input type="text" name="jenis" id="jenis" class="form-control" required placeholder="PKH, BPNT, Dsb..">
@@ -933,6 +1000,46 @@
                             <div class="form-group col-12 col-md-6">
                                 <label for="nilai" class="form-label">Nilai</label>
                                 <input type="text" name="nilai" id="nilai" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_disabilitas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Form Disabilitas</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <input name="id_disabilitas" id="id_disabilitas" hidden>
+                            <input name="no_kk" id="no_kk" value="<?= $keluarga->no_kk ?>" hidden>
+                            <div class="form-group col-12">
+                                <select class="form-select text-capitalize" name="nama_penduduk" id="nama_penduduk" required>
+                                    <option value="">-</option>
+                                    <?php foreach ($penduduk as $item) : ?>
+                                        <option value="<?= $item->nama ?>"><?= $item->nama ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group col-12">
+                                <select class="form-select" name="jenis_disabilitas" id="jenis_disabilitas" required>
+                                    <option value="">-</option>
+                                    <option value="tuna netra">Tuna Netra</option>
+                                    <option value="tuna rungu">Tuna Rungu</option>
+                                    <option value="tuna wicara">Tuna Wicara</option>
+                                    <option value="tuna daksa">Tuna Daksa</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -1010,7 +1117,7 @@
         const set_form_aset_tidak_bergerak = (title, data) => {
             const modal_aset_tidak_bergerak = document.querySelector('#modal_aset_tidak_bergerak');
             const form = modal_aset_tidak_bergerak.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_aset`);
-            const fields = ['id_aset', 'jenis', 'keterangan', 'nilai', 'luas', 'kepemilikan', 'lama_sewa', 'url_maps'];
+            const fields = ['id_aset', 'jenis', 'nop', 'keterangan', 'nilai', 'luas', 'kepemilikan', 'lama_sewa', 'url_maps'];
             fields.forEach((e, i) => {
                 const element = modal_aset_tidak_bergerak.querySelector(`#${e}`);
                 element.value = title == 'insert' ? '' : data[i];
@@ -1047,9 +1154,19 @@
         const set_form_bansos = (title, data) => {
             const modal_bansos = document.querySelector('#modal_bansos');
             const form = modal_bansos.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_bansos`);
-            const fields = ['id_bansos', 'jenis', 'keterangan', 'tanggal_penetapan', 'nilai'];
+            const fields = ['id_bansos', 'nama_penduduk', 'jenis', 'keterangan', 'tanggal_penetapan', 'nilai'];
             fields.forEach((e, i) => {
                 const element = modal_bansos.querySelector(`#${e}`);
+                element.value = title == 'insert' ? '' : data[i];
+            })
+        }
+
+        const set_form_disabilitas = (title, data) => {
+            const modal_disabilitas = document.querySelector('#modal_disabilitas');
+            const form = modal_disabilitas.querySelector('form').setAttribute('action', `<?= base_url(); ?>kependudukan/${title}_disabilitas`);
+            const fields = ['id_disabilitas', 'nama_penduduk', 'jenis_disabilitas', ];
+            fields.forEach((e, i) => {
+                const element = modal_disabilitas.querySelector(`#${e}`);
                 element.value = title == 'insert' ? '' : data[i];
             })
         }

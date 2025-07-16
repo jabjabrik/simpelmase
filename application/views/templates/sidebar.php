@@ -26,6 +26,12 @@
                         </div>
                         Data Penduduk
                     </a>
+                    <a class="nav-link <?= $title == 'Bantuan Sosial' ? 'active' : '' ?>" href="<?= base_url('bansos') ?>">
+                        <div class="sb-nav-link-icon">
+                            <i class="bi bi-wallet"></i>
+                        </div>
+                        Bantuan Sosial
+                    </a>
                     <a class="nav-link <?= $title == 'Pendataan KTP' ? 'active' : '' ?>" href="<?= base_url('ktp') ?>">
                         <div class="sb-nav-link-icon">
                             <i class="bi bi-file-earmark-post"></i>

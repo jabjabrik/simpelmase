@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Ktp extends CI_Controller
+class Bansos extends CI_Controller
 {
     public function __construct()
     {
@@ -14,17 +14,11 @@ class Ktp extends CI_Controller
     public function index()
     {
         $filter = $this->input->get('f');
-        $op = $this->input->get('op');
-
-        if (!empty($filter) && !preg_match('/\b(1|2|3)\b/', $filter)) {
-            redirect('ktp');
-        }
 
         $data['filter'] = $filter;
-        $data['op'] = $op;
-        $data['data_result'] = $this->ktp_model->get_all($filter, $op);
-        $data['title'] = 'Pendataan KTP';
-        $this->load->view('ktp/index', $data);
+        $data['data_result'] = $this->base_model->get_all('bansos');
+        $data['title'] = 'Bantuan Sosial';
+        $this->load->view('bansos/index', $data);
     }
 
     public function edit()
@@ -34,5 +28,12 @@ class Ktp extends CI_Controller
         $this->base_model->update('kependudukan', ['status_ktp' => $status_ktp], $id_kependudukan);
         set_alert('Berhasil mengedit status KTP penduduk', 'success');
         redirect('ktp');
+    }
+
+    public function report($filter = '')
+    {
+        $data['data_result'] = $this->base_model->get_all('bansos');
+        $data['filter'] = $filter;
+        $this->load->view('bansos/report', $data);
     }
 }

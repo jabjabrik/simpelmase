@@ -32,7 +32,7 @@
                     <!-- Alert -->
                     <?php $this->view('templates/alert'); ?>
                     <!-- End Alert -->
-                    <h3 class="mt-4">Pendataan KTP Penduduk</h3>
+                    <h3 class="mt-4">Pendataan KTP Penduduk <?= $op == '>' ? 'Diatas 17 Tahun' : 'Dibawah 17 Tahun' ?></h3>
                     <ol class="breadcrumb mb-4">
                         <?php if (empty($filter)): ?>
                             <li class="breadcrumb-item active">Semua Penduduk</li>
@@ -41,6 +41,17 @@
                             <li class="breadcrumb-item active"><?= $filter == 1 ? 'Belum Diketahui' : ($filter == 2 ? 'Memiliki KTP' : 'Belum Memiliki KTP'); ?></li>
                         <?php endif; ?>
                     </ol>
+                    <div class="btn-group btn-group-sm " role="group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="<?= base_url('ktp?op=>') ?>">> 17 Tahun</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('ktp?op=<') ?>">
+                                    < 17 Tahun</a>
+                            </li>
+                        </ul>
+                    </div>
 
                     <div class="card mb-4 mx-0">
                         <div class="card-header">
@@ -56,7 +67,9 @@
                                         <th>Jenkel</th>
                                         <th>Usia</th>
                                         <th>Hub.Keluarga</th>
-                                        <th>Status</th>
+                                        <?php if ($op == '>'): ?>
+                                            <th>Status</th>
+                                        <?php endif; ?>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -70,24 +83,29 @@
                                             <td><?= $item->jenis_kelamin ?></td>
                                             <td><?= convert_usia($item->tanggal_lahir) ?> Tahun</td>
                                             <td><?= $item->hubungan_keluarga ?></td>
-                                            <td>
-                                                <?php if ($item->status_ktp == 'memiliki KTP'): ?>
-                                                    <i class="text-success bi bi-check-circle-fill"></i>
-                                                    <a id="link" href="<?= base_url('ktp?f=2'); ?>">Memiliki KTP</a>
-                                                <?php endif; ?>
-                                                <?php if ($item->status_ktp == 'belum diketahui' && convert_usia($item->tanggal_lahir) >= 17): ?>
-                                                    <a id="link" href="<?= base_url('ktp?f=1'); ?>">Belum diketahui</a>
-                                                <?php endif; ?>
-                                                <?php if ($item->status_ktp == 'belum memiliki KTP'): ?>
-                                                    <i class="text-danger bi bi-x-octagon-fill"></i>
-                                                    <a id="link" href="<?= base_url('ktp?f=3'); ?>">belum memiliki KTP</a>
-                                                <?php endif; ?>
-                                            </td>
+                                            <?php if ($op == '>'): ?>
+                                                <td>
+                                                    <?php if ($item->status_ktp == 'memiliki KTP'): ?>
+                                                        <i class="text-success bi bi-check-circle-fill"></i>
+                                                        <a id="link" href="<?= base_url('ktp?f=2'); ?>">Memiliki KTP</a>
+                                                    <?php endif; ?>
+                                                    <?php if ($item->status_ktp == 'belum diketahui' && convert_usia($item->tanggal_lahir) >= 17): ?>
+                                                        <a id="link" href="<?= base_url('ktp?f=1'); ?>">Belum diketahui</a>
+                                                    <?php endif; ?>
+                                                    <?php if ($item->status_ktp == 'belum memiliki KTP'): ?>
+                                                        <i class="text-danger bi bi-x-octagon-fill"></i>
+                                                        <a id="link" href="<?= base_url('ktp?f=3'); ?>">belum memiliki KTP</a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            <?php endif; ?>
+
                                             <td>
                                                 <?php $params = "[`$item->id_kependudukan`,`$item->status_ktp`]" ?>
-                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_ktp" onclick="setForm(<?= $params ?>);">
-                                                    <i class="bi bi-gear"></i>
-                                                </button>
+                                                <?php if ($op == '>'): ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_ktp" onclick="setForm(<?= $params ?>);">
+                                                        <i class="bi bi-gear"></i>
+                                                    </button>
+                                                <?php endif; ?>
                                                 <a href="<?= base_url("kependudukan/kk/$item->no_kk") ?>" target="_blank" class="btn btn-sm btn-outline-success">
                                                     <i class="bi bi-box-arrow-right"></i> Detail
                                                 </a>

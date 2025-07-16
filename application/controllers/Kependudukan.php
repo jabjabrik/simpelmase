@@ -64,6 +64,7 @@ class Kependudukan extends CI_Controller
         $data['aset_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset bergerak');
         $data['aset_tidak_bergerak'] = $this->kependudukan_model->get_aset_penduduk($no_kk, 'aset tidak bergerak');
         $data['bansos'] = $this->kependudukan_model->get_bansos_penduduk($no_kk);
+        $data['disabilitas'] = $this->kependudukan_model->get_disabilitas_penduduk($no_kk);
         $data['informasi_tambahan'] = $this->kependudukan_model->get_informasi_tambahan_penduduk($no_kk);
         $data['no_kk'] = $no_kk;
 
@@ -150,6 +151,7 @@ class Kependudukan extends CI_Controller
         if ($kategori == 'aset tidak bergerak') {
             $data['luas'] = $this->input->post('luas', true);
             $data['kepemilikan'] = $this->input->post('kepemilikan', true);
+            $data['nop'] = $this->input->post('nop', true);
             $data['lama_sewa'] = $this->input->post('lama_sewa', true);
             $data['url_maps'] = $this->input->post('url_maps', true);
         }
@@ -176,6 +178,7 @@ class Kependudukan extends CI_Controller
 
         if ($kategori == 'aset tidak bergerak') {
             $data['luas'] = $this->input->post('luas', true);
+            $data['nop'] = $this->input->post('nop', true);
             $data['kepemilikan'] = $this->input->post('kepemilikan', true);
             $data['lama_sewa'] = $this->input->post('lama_sewa', true);
             $data['url_maps'] = $this->input->post('url_maps', true);
@@ -239,6 +242,7 @@ class Kependudukan extends CI_Controller
 
         $data = [
             'no_kk' => $no_kk,
+            'nama_penduduk' => $this->input->post('nama_penduduk', true),
             'jenis' => $this->input->post('jenis', true),
             'keterangan' => $this->input->post('keterangan', true),
             'tanggal_penetapan' => $this->input->post('tanggal_penetapan', true),
@@ -257,6 +261,7 @@ class Kependudukan extends CI_Controller
         $id_bansos = $this->input->post('id_bansos', true);
 
         $data = [
+            'nama_penduduk' => $this->input->post('nama_penduduk', true),
             'jenis' => $this->input->post('jenis', true),
             'keterangan' => $this->input->post('keterangan', true),
             'tanggal_penetapan' => $this->input->post('tanggal_penetapan', true),
@@ -276,6 +281,47 @@ class Kependudukan extends CI_Controller
         $no_kk = $this->base_model->get_one_data_by('bansos', 'id_bansos', $id_bansos)->no_kk;
         $this->base_model->delete('bansos', $id_bansos);
         set_alert('Data Bantuan berhasil dihapus', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function insert_disabilitas()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+
+        $data = [
+            'no_kk' => $no_kk,
+            'nama_penduduk' => $this->input->post('nama_penduduk', true),
+            'jenis_disabilitas' => $this->input->post('jenis_disabilitas', true),
+        ];
+
+
+        $this->base_model->insert('disabilitas', $data);
+        set_alert('Data Disabilitas Berhasil di Tambahkan', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function edit_disabilitas()
+    {
+        $no_kk = $this->input->post('no_kk', true);
+        $id_disabilitas = $this->input->post('id_disabilitas', true);
+
+        $data = [
+            'nama_penduduk' => $this->input->post('nama_penduduk', true),
+            'jenis_disabilitas' => $this->input->post('jenis_disabilitas', true),
+        ];
+
+
+        $this->base_model->update('disabilitas', $data, $id_disabilitas);
+        set_alert('Data Disabilitas Berhasil di Perbarui', 'success');
+        redirect("kependudukan/kk/$no_kk");
+    }
+
+    public function delete_disabilitas($id_disabilitas = null)
+    {
+        if (is_null($id_disabilitas)) redirect('kependudukan');
+        $no_kk = $this->base_model->get_one_data_by('disabilitas', 'id_disabilitas', $id_disabilitas)->no_kk;
+        $this->base_model->delete('disabilitas', $id_disabilitas);
+        set_alert('Data Disabilitas berhasil dihapus', 'success');
         redirect("kependudukan/kk/$no_kk");
     }
 
@@ -320,7 +366,6 @@ class Kependudukan extends CI_Controller
         set_alert('Data Informasi Tambahan berhasil dihapus', 'success');
         redirect("kependudukan/kk/$no_kk");
     }
-
 
     public function report($no_kk = null)
     {
