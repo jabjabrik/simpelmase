@@ -432,6 +432,94 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-users me-1"></i>
+                            Informasi Kependudukan
+                            <div class="btn-group btn-group-sm " role="group">
+                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <!-- <li><a class="dropdown-item" href="<?= base_url("dashboard?year=2024") ?>">2024</a></li> -->
+                                    <li><a class="dropdown-item" href="<?= base_url("dashboard?year=2025") ?>">2025</a></li>
+                                    <!-- <li><a class="dropdown-item" href="<?= base_url("dashboard?year=2026") ?>">2026</a></li> -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body bg-surface-secondary p-md-3 p-2">
+                            <div class="row gy-2  px-0">
+                                <div class="col-md-3 col-6">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a href="#" class="h6 font-semibold text-muted text-sm d-block mb-2 text-decoration-none">Penerima Bansos</a>
+                                                    <span class="h3 font-bold mb-0"><?= $total_bansos ?></span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-success text-white text-lg rounded-circle">
+                                                        <i class="bi bi-people"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a href="#" class="h6 font-semibold text-muted text-sm d-block mb-2 text-decoration-none">Pencatatan Pendapatan</a>
+                                                    <span class="h3 font-bold mb-0"><?= $total_pendapatan ?></span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
+                                                        <i class="bi bi-people"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a href="#" class="h6 font-semibold text-muted text-sm d-block mb-2 text-decoration-none">Pencatatan Aset</a>
+                                                    <span class="h3 font-bold mb-0"><?= $total_aset ?></span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-danger text-white text-lg rounded-circle">
+                                                        <i class="bi bi-people"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <a href="#" class="h6 font-semibold text-muted text-sm d-block mb-2 text-decoration-none">Pencatatan KTP</a>
+                                                    <span class="h3 font-bold mb-0"><?= $total_ktp ?></span>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="icon icon-shape bg-danger text-white text-lg rounded-circle">
+                                                        <i class="bi bi-people"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-users me-1"></i>
                             Statistik Penduduk Desa Sumberkledung
                         </div>
                         <div class="card-body bg-surface-secondary">

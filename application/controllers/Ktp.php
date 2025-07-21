@@ -14,7 +14,7 @@ class Ktp extends CI_Controller
     public function index()
     {
         $filter = $this->input->get('f');
-        $op = $this->input->get('op');
+        $op = $this->input->get('op') ?? '>';
 
         if (!empty($filter) && !preg_match('/\b(1|2|3)\b/', $filter)) {
             redirect('ktp');

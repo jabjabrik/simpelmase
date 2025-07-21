@@ -24,6 +24,32 @@ class Dashboard extends CI_Controller
             $data["rw$i"] = $this->kependudukan_model->get_kependudukan_rt_rw('rw', sprintf("%03d", $i));
         }
 
+        $year = $this->input->get('year') ?? '2025';
+
+        $this->db->from('bansos');
+        $this->db->where('YEAR(tanggal_penetapan)', $year);
+        $data['total_bansos'] = $this->db->count_all_results();
+
+        $this->db->from('kependudukan');
+        $this->db->where('pendapatan !=', 0);
+        $data['total_pendapatan'] = $this->db->count_all_results();
+
+
+        $this->db->from('kependudukan');
+        $this->db->where('status_ktp', 'memiliki KTP');
+        $this->db->where_not_in('hubungan_keluarga', [
+            'kepala keluarga',
+            'istri',
+            'orang-tua',
+            'mertua',
+            'menantu'
+        ]);
+        $data['total_ktp'] = $this->db->count_all_results();
+
+
+        $data['total_aset'] = $this->db->count_all('aset');
+
+
         $data['title'] = 'Dashboard';
         $this->load->view('dashboard/index', $data);
     }
