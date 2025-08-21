@@ -1,10 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 30, 2025 at 08:18 PM
--- Server version: 10.4.22-MariaDB
+-- Host: localhost:3306
+-- Generation Time: Aug 21, 2025 at 07:50 AM
+-- Server version: 5.7.39
 -- PHP Version: 7.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -32,6 +32,7 @@ CREATE TABLE `aset` (
   `no_kk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `kategori` enum('aset bergerak','aset tidak bergerak') COLLATE utf8mb4_unicode_ci NOT NULL,
   `jenis` enum('tanah','bangunan','kendaraan','perangkat elektronik','lainnya') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nop` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `keterangan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nilai` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `luas` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -45,11 +46,11 @@ CREATE TABLE `aset` (
 -- Dumping data for table `aset`
 --
 
-INSERT INTO `aset` (`id_aset`, `no_kk`, `kategori`, `jenis`, `keterangan`, `nilai`, `luas`, `alamat`, `url_maps`, `kepemilikan`, `lama_sewa`) VALUES
-(1, '3513200207070032', 'aset bergerak', 'kendaraan', 'motor honda beat 2020', '15000000', NULL, NULL, NULL, NULL, NULL),
-(2, '3513200207070032', 'aset bergerak', 'kendaraan', 'motor honda supra 2005', '5500000', NULL, NULL, NULL, NULL, NULL),
-(3, '3513200207070032', 'aset tidak bergerak', 'bangunan', 'rumah pribadi', '700000000', '50 m2', 'dusun bataan', 'https://maps.app.goo.gl/xYsnLXoEeuUesRin9', 'milik pribadi', NULL),
-(4, '3513200207070032', 'aset tidak bergerak', 'tanah', 'sawah', '400000000', '100 ha', 'dusun bataan', 'https://maps.app.goo.gl/xYsnLXoEeuUesRin9', 'sewa', '2 tahun');
+INSERT INTO `aset` (`id_aset`, `no_kk`, `kategori`, `jenis`, `nop`, `keterangan`, `nilai`, `luas`, `alamat`, `url_maps`, `kepemilikan`, `lama_sewa`) VALUES
+(1, '3513200207070032', 'aset bergerak', 'kendaraan', NULL, 'motor honda beat 2020', '15000000', NULL, NULL, NULL, NULL, NULL),
+(2, '3513200207070032', 'aset bergerak', 'kendaraan', NULL, 'motor honda supra 2005', '5500000', NULL, NULL, NULL, NULL, NULL),
+(3, '3513200207070032', 'aset tidak bergerak', 'bangunan', '35.13.060.010.001-0003.0', 'rumah pribadi', '700000000', '50 m2', 'dusun bataan', 'https://maps.app.goo.gl/xYsnLXoEeuUesRin9', 'milik pribadi', NULL),
+(4, '3513200207070032', 'aset tidak bergerak', 'tanah', NULL, 'sawah', '400000000', '100 ha', 'dusun bataan', 'https://maps.app.goo.gl/xYsnLXoEeuUesRin9', 'sewa', '2 tahun');
 
 -- --------------------------------------------------------
 
@@ -60,6 +61,7 @@ INSERT INTO `aset` (`id_aset`, `no_kk`, `kategori`, `jenis`, `keterangan`, `nila
 CREATE TABLE `bansos` (
   `id_bansos` bigint(20) UNSIGNED NOT NULL,
   `no_kk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_penduduk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `jenis` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `keterangan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tanggal_penetapan` date NOT NULL,
@@ -70,9 +72,29 @@ CREATE TABLE `bansos` (
 -- Dumping data for table `bansos`
 --
 
-INSERT INTO `bansos` (`id_bansos`, `no_kk`, `jenis`, `keterangan`, `tanggal_penetapan`, `nilai`) VALUES
-(1, '3513200207070032', 'PKH', 'Mendapat bantuan uang tunai', '2025-04-30', '2.000.000'),
-(2, '3513200207070032', 'BPNT', 'Mendapat bantuan sembako', '2025-04-30', '20KG Beras');
+INSERT INTO `bansos` (`id_bansos`, `no_kk`, `nama_penduduk`, `jenis`, `keterangan`, `tanggal_penetapan`, `nilai`) VALUES
+(1, '3513200207070032', 'bintang arifitria n. r.', 'PKH', 'Mendapat KIP', '2025-08-21', '2000000'),
+(2, '3513200207070032', 'h. syamsul arifin', 'BPNT', 'Mendapat bantuan sembako', '2025-08-21', '20KG Beras');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `disabilitas`
+--
+
+CREATE TABLE `disabilitas` (
+  `id_disabilitas` bigint(20) UNSIGNED NOT NULL,
+  `no_kk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_penduduk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jenis_disabilitas` enum('tuna netra','tuna rungu','tuna wicara','tuna daksa') COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `disabilitas`
+--
+
+INSERT INTO `disabilitas` (`id_disabilitas`, `no_kk`, `nama_penduduk`, `jenis_disabilitas`) VALUES
+(1, '3513200207070032', 'dini zahrotul jannah', 'tuna netra');
 
 -- --------------------------------------------------------
 
@@ -983,9 +1005,9 @@ CREATE TABLE `kependudukan` (
   `nama_ibu` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nama_ayah` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `pekerjaan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pendapatan` int(11) NOT NULL DEFAULT 0,
+  `pendapatan` int(11) NOT NULL DEFAULT '0',
   `status_ktp` enum('belum diketahui','memiliki KTP','belum memiliki KTP') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'belum diketahui',
-  `is_active` tinyint(1) NOT NULL DEFAULT 1
+  `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -996,7 +1018,7 @@ INSERT INTO `kependudukan` (`id_kependudukan`, `nik`, `no_kk`, `nama`, `jenis_ke
 (1, '3513201909570001', '3513200207070032', 'h. syamsul arifin', 'laki-laki', '1957-09-19', 'probolinggo', 'islam', 'kepala keluarga', 'kawin', 'SLTP/Sederajat', NULL, NULL, 'arsap', 'arpi arsap', 'petani/pekebun', 3400000, 'memiliki KTP', 1),
 (2, '3513204107820204', '3513200207070032', 'titik ulfiah', 'perempuan', '1982-07-01', 'probolinggo', 'islam', 'istri', 'kawin', 'Tamat SD/Sederajat', NULL, NULL, 'nanik', 'taiyib samsul', 'mengurus rumah tangga', 0, 'memiliki KTP', 1),
 (3, '3513202105180003', '3513200207070032', 'muhammad habiybiy zainul arifin', 'laki-laki', '2018-05-21', 'probolinggo', 'islam', 'anak', 'belum kawin', 'Tidak/Belum Sekolah', NULL, NULL, 'titik ulfiah', 'h. syamsul arifin', 'belum/tidak bekerja', 0, 'belum diketahui', 1),
-(4, '3513205402080002', '3513200207070032', 'bintang arifitria n. r.', 'perempuan', '2008-02-14', 'probolinggo', 'islam', 'anak', 'belum kawin', 'Belum Tamat SD/Sederajat', '11', '2025-04-30', 'titik ulfiah', 'h. syamsul arifin', 'pelajar/mahasiswa', 0, 'memiliki KTP', 1),
+(4, '3513205402080002', '3513200207070032', 'bintang arifitria n. r.', 'perempuan', '2008-02-14', 'probolinggo', 'islam', 'anak', 'belum kawin', 'Belum Tamat SD/Sederajat', '11', '2025-08-21', 'titik ulfiah', 'h. syamsul arifin', 'pelajar/mahasiswa', 0, 'memiliki KTP', 1),
 (5, '3513206002020001', '3513200207070032', 'dini zahrotul jannah', 'perempuan', '2002-02-20', 'probolinggo', 'islam', 'famili-lain', 'belum kawin', 'Tamat SD/Sederajat', NULL, NULL, 'titik ulfiah', '-', 'karyawan swasta', 1400000, 'belum memiliki KTP', 1),
 (6, '3513190101770003', '3513200210120009', 'hasan', 'laki-laki', '1977-06-05', 'probolinggo', 'islam', 'kepala keluarga', 'kawin', 'Tamat SD/Sederajat', NULL, NULL, 'tuha', 'sutopo', 'buruh tani/perkebunan', 0, 'memiliki KTP', 1),
 (7, '3513204107750196', '3513200210120009', 'suryani', 'perempuan', '1975-07-01', 'probolinggo', 'islam', 'istri', 'kawin', 'Tamat SD/Sederajat', NULL, NULL, 'enik', 'tori\'a', 'petani/pekebun', 0, 'memiliki KTP', 1),
@@ -3583,25 +3605,6 @@ INSERT INTO `kependudukan` (`id_kependudukan`, `nik`, `no_kk`, `nama`, `jenis_ke
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
---
-
-CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `migrations`
---
-
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, 'simpelmase', 1);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `no_surat`
 --
 
@@ -3663,7 +3666,7 @@ CREATE TABLE `sk_domisili` (
 --
 
 INSERT INTO `sk_domisili` (`id`, `id_kependudukan`, `no_surat`, `tanggal_pengajuan`, `keperluan`, `foto_ktp`, `foto_kartu_pajak`, `foto_kartu_vaksin`, `pas_foto`, `validasi_sekdes`, `validasi_kades`, `status_print`, `notifikasi`, `file_surat`) VALUES
-(1, 1, '001/426.420.10/2024', '2025-04-30', '--', 'ktp-1.png', 'pajak-1.png', 'vaksin-1.png', 'pas_foto-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
+(1, 1, '001/426.420.10/2024', '2025-08-21', '--', 'ktp-1.png', 'pajak-1.png', 'vaksin-1.png', 'pas_foto-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3696,7 +3699,7 @@ CREATE TABLE `sk_kehilangan` (
 --
 
 INSERT INTO `sk_kehilangan` (`id`, `id_kependudukan`, `no_surat`, `tanggal_pengajuan`, `kehilangan`, `lokasi`, `hari`, `tanggal`, `foto_ktp`, `pas_foto`, `foto_kartu_pajak`, `foto_kartu_vaksin`, `validasi_sekdes`, `validasi_kades`, `status_print`, `notifikasi`, `file_surat`) VALUES
-(1, 1, '001/426.420.10/2024', '2025-04-30', 'akta kelahiran', 'rumah pribadi', 'senin', '2025-04-30', 'ktp-1.png', NULL, NULL, NULL, 'proses', 'disetujui', 'kantor desa', NULL, NULL);
+(1, 1, '001/426.420.10/2024', '2025-08-21', 'akta kelahiran', 'rumah pribadi', 'senin', '2025-08-21', 'ktp-1.png', NULL, NULL, NULL, 'proses', 'disetujui', 'kantor desa', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3732,7 +3735,7 @@ CREATE TABLE `sk_kelahiran` (
 --
 
 INSERT INTO `sk_kelahiran` (`id`, `id_kependudukan`, `no_surat`, `tanggal_pengajuan`, `nik_ayah`, `nik_ibu`, `nama_bayi`, `jenis_kelamin`, `hari_lahir`, `tempat_lahir`, `tanggal_lahir`, `foto_kk`, `foto_buku_nikah`, `foto_ktp_ayah`, `foto_ktp_ibu`, `validasi_sekdes`, `validasi_kades`, `status_print`, `notifikasi`, `file_surat`) VALUES
-(1, 1, '001/426.420.10/2024', '2025-04-30', '3513201909570001', '3513204107820204', 'muhammad zaki', 'laki-laki', 'senin', 'rumah sakit', '2025-04-30 18:17:30', 'kk-1.png', 'buku_nikah-1.png', 'ktp-1.png', 'ktp-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
+(1, 1, '001/426.420.10/2024', '2025-08-21', '3513201909570001', '3513204107820204', 'muhammad zaki', 'laki-laki', 'senin', 'rumah sakit', '2025-08-21 14:49:29', 'kk-1.png', 'buku_nikah-1.png', 'ktp-1.png', 'ktp-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3767,7 +3770,7 @@ CREATE TABLE `sk_kematian` (
 --
 
 INSERT INTO `sk_kematian` (`id`, `id_kependudukan`, `no_surat`, `tanggal_pengajuan`, `nik_jenazah`, `nama_jenazah`, `hari_meninggal`, `tanggal_meninggal`, `penyebab_meninggal`, `tempat_meninggal`, `foto_ktp_pelapor`, `foto_kk_jenazah`, `foto_ktp_jenazah`, `foto_akte_lahir`, `validasi_sekdes`, `validasi_kades`, `status_print`, `notifikasi`, `file_surat`) VALUES
-(1, 1, '001/426.420.10/2024', '2025-04-30', '3513206002020001', 'dini zahrotul jannah', 'senin', '2025-04-30', 'kecelakaan', 'dusun bataan', 'ktp-1.png', 'kk-1.png', 'ktp-1.png', 'akte-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
+(1, 1, '001/426.420.10/2024', '2025-08-21', '3513206002020001', 'dini zahrotul jannah', 'senin', '2025-08-21', 'kecelakaan', 'dusun bataan', 'ktp-1.png', 'kk-1.png', 'ktp-1.png', 'akte-1.png', 'proses', 'proses', 'kantor desa', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3798,8 +3801,8 @@ CREATE TABLE `sk_usaha` (
 --
 
 INSERT INTO `sk_usaha` (`id`, `id_kependudukan`, `no_surat`, `tanggal_pengajuan`, `nama_usaha`, `keperluan`, `foto_ktp`, `foto_kartu_pajak`, `pas_foto`, `foto_kartu_vaksin`, `validasi_sekdes`, `validasi_kades`, `status_print`, `notifikasi`, `file_surat`) VALUES
-(1, 1, '001/426.420.10/2024', '2025-04-30', 'toko pupuk', 'membuka usaha toko pupuk', 'ktp-1.png', 'pajak-1.png', NULL, NULL, 'proses', 'disetujui', 'mandiri', NULL, 'sk_usaha-1.docx'),
-(2, 1, '002/426.420.10/2024', '2025-04-30', 'bengkel', 'membuka usaha bengkel', 'ktp-1.png', 'pajak-1.png', NULL, NULL, 'proses', 'proses', 'kantor desa', NULL, NULL);
+(1, 1, '001/426.420.10/2024', '2025-08-21', 'toko pupuk', 'membuka usaha toko pupuk', 'ktp-1.png', 'pajak-1.png', NULL, NULL, 'proses', 'disetujui', 'mandiri', NULL, 'sk_usaha-1.docx'),
+(2, 1, '002/426.420.10/2024', '2025-08-21', 'bengkel', 'membuka usaha bengkel', 'ktp-1.png', 'pajak-1.png', NULL, NULL, 'proses', 'proses', 'kantor desa', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -6419,6 +6422,13 @@ ALTER TABLE `bansos`
   ADD KEY `bansos_no_kk_foreign` (`no_kk`);
 
 --
+-- Indexes for table `disabilitas`
+--
+ALTER TABLE `disabilitas`
+  ADD PRIMARY KEY (`id_disabilitas`),
+  ADD KEY `disabilitas_no_kk_foreign` (`no_kk`);
+
+--
 -- Indexes for table `informasi_tambahan`
 --
 ALTER TABLE `informasi_tambahan`
@@ -6439,12 +6449,6 @@ ALTER TABLE `kependudukan`
   ADD PRIMARY KEY (`id_kependudukan`),
   ADD UNIQUE KEY `kependudukan_nik_unique` (`nik`),
   ADD KEY `kependudukan_no_kk_foreign` (`no_kk`);
-
---
--- Indexes for table `migrations`
---
-ALTER TABLE `migrations`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `no_surat`
@@ -6518,6 +6522,12 @@ ALTER TABLE `bansos`
   MODIFY `id_bansos` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `disabilitas`
+--
+ALTER TABLE `disabilitas`
+  MODIFY `id_disabilitas` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `informasi_tambahan`
 --
 ALTER TABLE `informasi_tambahan`
@@ -6534,12 +6544,6 @@ ALTER TABLE `keluarga`
 --
 ALTER TABLE `kependudukan`
   MODIFY `id_kependudukan` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2575;
-
---
--- AUTO_INCREMENT for table `migrations`
---
-ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `no_surat`
@@ -6604,6 +6608,12 @@ ALTER TABLE `aset`
 --
 ALTER TABLE `bansos`
   ADD CONSTRAINT `bansos_no_kk_foreign` FOREIGN KEY (`no_kk`) REFERENCES `keluarga` (`no_kk`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `disabilitas`
+--
+ALTER TABLE `disabilitas`
+  ADD CONSTRAINT `disabilitas_no_kk_foreign` FOREIGN KEY (`no_kk`) REFERENCES `keluarga` (`no_kk`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `informasi_tambahan`
